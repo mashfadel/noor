@@ -38,7 +38,7 @@ enum NoopLocalAccessMain {
         } catch let error as LocalAccessError {
             let message: String
             if case .databaseUnavailable = error {
-                message = "NOOP database is unavailable"
+                message = "Noor database is unavailable"
             } else {
                 message = error.description
             }

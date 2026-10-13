@@ -33,7 +33,7 @@ settings:
     # at runtime via the AppGroupIdentifier Info.plist key (WidgetSnapshot.suiteName) so the value is
     # never hard-coded in Swift. Built from $(BUNDLE_ID_PREFIX) (see Config/BundleId.xcconfig) — set
     # BUNDLE_ID_PREFIX in a gitignored Config/BundleIdSecrets.xcconfig to build under your own Apple ID.
-    APP_GROUP_ID: group.$(BUNDLE_ID_PREFIX).noop.staging
+    APP_GROUP_ID: group.$(BUNDLE_ID_PREFIX).noor
     # Build for both Apple Silicon and Intel so the release runs on every Mac.
     ARCHS: "$(ARCHS_STANDARD)"
   configs:
@@ -101,14 +101,14 @@ targets:
     info:
       path: Strand/Resources/Info.plist
       properties:
-        CFBundleName: NOOP
-        CFBundleDisplayName: NOOP
+        CFBundleName: Noor
+        CFBundleDisplayName: Noor
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "198"
         LSMinimumSystemVersion: "13.0"
         LSApplicationCategoryType: public.app-category.healthcare-fitness
-        NSBluetoothAlwaysUsageDescription: "NOOP connects directly to your WHOOP strap over Bluetooth to read heart rate, R-R intervals, battery, and sensor data locally on your Mac. Nothing leaves your device."
-        NSLocationWhenInUseUsageDescription: "NOOP records your route during an outdoor workout to show distance, pace, and a map. The route stays on your device. Nothing leaves it."
+        NSBluetoothAlwaysUsageDescription: "Noor connects directly to your WHOOP strap over Bluetooth to read heart rate, R-R intervals, battery, and sensor data locally on your Mac. Nothing leaves your device."
+        NSLocationWhenInUseUsageDescription: "Noor records your route during an outdoor workout to show distance, pace, and a map. The route stays on your device. Nothing leaves it."
         # The AI Coach's "Custom (OpenAI-compatible)" provider talks to a LOCAL LLM server over plain
         # HTTP on loopback (Ollama / LM Studio / llama.cpp at http://localhost:…). ATS blocks cleartext
         # by default; NSAllowsLocalNetworking exempts loopback/.local/unqualified hosts ONLY — public
@@ -203,7 +203,7 @@ targets:
   # macOS app's Strand/ sources; the macOS-only scene/menu-bar/notification files
   # are excluded, and the iOS app shell + HealthKit + widgets/intents live under
   # StrandiOS/. See docs/IOS.md.
-  NOOPiOS:
+  Noor:
     type: application
     platform: iOS
     deploymentTarget: "17.0"
@@ -239,8 +239,8 @@ targets:
     info:
       path: StrandiOS/Resources/Info.plist
       properties:
-        CFBundleName: NOOP
-        CFBundleDisplayName: NOOP
+        CFBundleName: Noor
+        CFBundleDisplayName: Noor
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         # Surfaces APP_GROUP_ID to runtime (WidgetSnapshot.suiteName) so the App Group id isn't
@@ -299,17 +299,17 @@ targets:
           # the re-score task, which is submitted only when a re-score is OWED, and a missing strap owes
           # none, so that task would never run in the one case the warning exists for.
           - $(PRODUCT_BUNDLE_IDENTIFIER).stalebattery
-        NSBluetoothAlwaysUsageDescription: "NOOP connects directly to your WHOOP strap over Bluetooth to read heart rate, R-R intervals, battery, and sensor data locally on your iPhone. Nothing leaves your device."
-        NSLocationWhenInUseUsageDescription: "NOOP records your route during an outdoor workout to show distance, pace, and a map, and keeps recording while the screen is off. The route stays on your device. Nothing leaves it."
-        NSHealthShareUsageDescription: "NOOP reads your own Apple Health data on-device to compute recovery, strain, and sleep. Nothing leaves your device."
-        NSHealthUpdateUsageDescription: "NOOP writes the metrics it computes from your strap back into Apple Health, on-device and only when you allow it."
-        NSMotionUsageDescription: "NOOP reads your iPhone's step count for a walking or running workout to show steps in the activity summary. It stays on your device. Nothing leaves it."
+        NSBluetoothAlwaysUsageDescription: "Noor connects directly to your WHOOP strap over Bluetooth to read heart rate, R-R intervals, battery, and sensor data locally on your iPhone. Nothing leaves your device."
+        NSLocationWhenInUseUsageDescription: "Noor records your route during an outdoor workout to show distance, pace, and a map, and keeps recording while the screen is off. The route stays on your device. Nothing leaves it."
+        NSHealthShareUsageDescription: "Noor reads your own Apple Health data on-device to compute recovery, strain, and sleep. Nothing leaves your device."
+        NSHealthUpdateUsageDescription: "Noor writes the metrics it computes from your strap back into Apple Health, on-device and only when you allow it."
+        NSMotionUsageDescription: "Noor reads your iPhone's step count for a walking or running workout to show steps in the activity summary. It stays on your device. Nothing leaves it."
         # K4: Coach voice input. Speech is transcribed ON-DEVICE ONLY (requiresOnDeviceRecognition);
         # the mic button is disabled where the locale doesn't support that, never falls back to
         # server transcription. Only the resulting TEXT reaches the provider, via the same channel
         # a typed question already uses.
-        NSSpeechRecognitionUsageDescription: "NOOP transcribes your question on-device so you can ask the coach out loud instead of typing. Audio never leaves your iPhone."
-        NSMicrophoneUsageDescription: "NOOP uses the microphone to let you ask the coach a question by voice. The audio is transcribed on-device and never leaves your iPhone."
+        NSSpeechRecognitionUsageDescription: "Noor transcribes your question on-device so you can ask the coach out loud instead of typing. Audio never leaves your iPhone."
+        NSMicrophoneUsageDescription: "Noor uses the microphone to let you ask the coach a question by voice. The audio is transcribed on-device and never leaves your iPhone."
         # #187: the opt-in AI Coach's "Custom (OpenAI-compatible)" provider can point at a LOCAL LLM on
         # the LAN (Ollama / LM Studio at http://192.168.x.x:11434). ATS blocks cleartext by default;
         # NSAllowsLocalNetworking exempts loopback/.local/private-LAN hosts ONLY — public HTTPS endpoints
@@ -341,12 +341,14 @@ targets:
           - $(APP_GROUP_ID)
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).noop
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).noor
         # NOT "NOOP Staging": 749c94118 dropped the .staging suffix from every iOS-family bundle id
         # because iOS has no App Store app to install beside (NoopApp is closed), so the overlay served
         # no purpose and only broke sideloading. The product name was missed by that same change. macOS
         # keeps both halves deliberately (#39) and is unaffected.
-        PRODUCT_NAME: NOOP
+        PRODUCT_NAME: Noor
+        # Keep the Swift module name stable so internal references and archived types are unaffected.
+        PRODUCT_MODULE_NAME: NOOP
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         # Ship every *.appiconset (not just the primary AppIcon) so the alternate "AppIcon-Navy"
         # set is compiled into the bundle and is available to UIApplication.setAlternateIconName.
@@ -385,7 +387,7 @@ targets:
     info:
       path: StrandiOSWidgets/Info.plist
       properties:
-        CFBundleDisplayName: NOOP
+        CFBundleDisplayName: Noor
         # Version keys MUST live here in the generated-Info.plist properties — NOT hand-edited into the
         # file — because xcodegen regenerates StrandiOSWidgets/Info.plist on every `xcodegen generate`
         # (which every release runs for the version bump) and would otherwise rewrite them to its
@@ -405,7 +407,7 @@ targets:
           - $(APP_GROUP_ID)
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).noop.widgets
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).noor.widgets
         PRODUCT_NAME: NOOPWidgets
         GENERATE_INFOPLIST_FILE: NO
         TARGETED_DEVICE_FAMILY: "1,2"
@@ -435,8 +437,8 @@ targets:
     info:
       path: NOOPWatch/Info.plist
       properties:
-        CFBundleName: NOOP
-        CFBundleDisplayName: NOOP
+        CFBundleName: Noor
+        CFBundleDisplayName: Noor
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         # Surfaces APP_GROUP_ID to runtime (WatchScoreStore.suiteName) so the App Group id isn't
@@ -447,9 +449,9 @@ targets:
         # Pairs this watch app to the iPhone companion (must match NOOPiOS PRODUCT_BUNDLE_IDENTIFIER).
         # Built from the same $(BUNDLE_ID_PREFIX) rather than $(PRODUCT_BUNDLE_IDENTIFIER) because that
         # build setting would resolve to THIS target's own id, not NOOPiOS's.
-        WKCompanionAppBundleIdentifier: $(BUNDLE_ID_PREFIX).noop
-        NSHealthShareUsageDescription: "NOOP reads your heart rate from the Watch sensor to show a live readout on your wrist. It stays on your device."
-        NSHealthUpdateUsageDescription: "NOOP records a basic workout session on your Watch for a higher-fidelity heart rate. The session stays on your device."
+        WKCompanionAppBundleIdentifier: $(BUNDLE_ID_PREFIX).noor
+        NSHealthShareUsageDescription: "Noor reads your heart rate from the Watch sensor to show a live readout on your wrist. It stays on your device."
+        NSHealthUpdateUsageDescription: "Noor records a basic workout session on your Watch for a higher-fidelity heart rate. The session stays on your device."
     entitlements:
       path: NOOPWatch/NOOPWatch.entitlements
       properties:
@@ -459,7 +461,7 @@ targets:
           - $(APP_GROUP_ID)
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).noop.watch
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).noor.watch
         # The bundle FILE is NOOPWatch.app so it doesn't collide with the iPhone app's NOOP.app when it is
         # embedded at NOOP.app/Watch/NOOPWatch.app. The user still sees "NOOP" on the wrist via the
         # CFBundleName / CFBundleDisplayName above.
@@ -494,7 +496,7 @@ targets:
     info:
       path: NOOPWatchComplications/Info.plist
       properties:
-        CFBundleDisplayName: NOOP
+        CFBundleDisplayName: Noor
         # Version keys live here as generated-plist properties so xcodegen keeps them lockstep with the
         # parent watch app on every regenerate (mirrors the NOOPiOSWidgets rationale, #416).
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
@@ -510,7 +512,7 @@ targets:
           - $(APP_GROUP_ID)
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).noop.watch.complications
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).noor.watch.complications
         PRODUCT_NAME: NOOPWatchComplications
         GENERATE_INFOPLIST_FILE: NO
         TARGETED_DEVICE_FAMILY: "4"
@@ -521,7 +523,7 @@ targets:
       - package: StrandDesign
 
 # Explicit schemes so `xcodebuild -scheme Strand …` builds + tests the macOS app (with StrandTests
-# wired in) and `-scheme NOOPiOS …` builds the iOS app. Names match the app-build CI matrix.
+# wired in) and `-scheme Noor …` builds the iOS app. Names match the app-build CI matrix.
 schemes:
   Strand:
     build:
@@ -533,10 +535,10 @@ schemes:
       config: Debug
       targets:
         - StrandTests
-  NOOPiOS:
+  Noor:
     build:
       targets:
-        NOOPiOS: all
+        Noor: all
     run:
       config: Debug
   # `xcodebuild -scheme NOOPWatch …` compile-verifies the watchOS app + its embedded complication

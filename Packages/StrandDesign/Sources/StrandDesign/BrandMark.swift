@@ -51,7 +51,7 @@ public struct BrandMark: View {
         }
         .frame(width: size, height: size)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("NOOP"))
+        .accessibilityLabel(Text("Noor"))
         .accessibilityAddTraits(.isImage)
     }
 
@@ -64,7 +64,7 @@ public struct BrandMark: View {
         Circle()
             .fill(
                 LinearGradient(
-                    colors: [Color(hex: "#1A1E24"), Color(hex: "#0E1116")],
+                    colors: [Color(hex: "#1A1A1A"), Color(hex: "#050505")],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -74,7 +74,7 @@ public struct BrandMark: View {
                 Circle()
                     .fill(
                         LinearGradient(
-                            colors: [Color(hex: "#2A2F37").opacity(0.5), .clear],
+                            colors: [Color(hex: "#2A2A2A").opacity(0.5), .clear],
                             startPoint: .top,
                             endPoint: .center
                         )
@@ -100,7 +100,7 @@ public struct BrandMark: View {
             lineWidth: ringWidth
         )
         .stroke(
-            StrandPalette.chargeColor,
+            NoopVisualStyle.mint,
             style: StrokeStyle(lineWidth: ringWidth, lineCap: .round)
         )
         .frame(width: ringDiameter, height: ringDiameter)
@@ -112,7 +112,7 @@ public struct BrandMark: View {
     /// open-ring + core-dot lock-up.
     private var coreDot: some View {
         Circle()
-            .fill(Color.white)
+            .fill(NoopVisualStyle.mint)
             .frame(width: coreDiameter, height: coreDiameter)
     }
 }

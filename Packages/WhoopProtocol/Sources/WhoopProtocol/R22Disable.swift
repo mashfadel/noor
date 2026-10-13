@@ -529,7 +529,7 @@ public struct R22DisableReport: Equatable, Sendable {
         the deep records actually stop is a separate question, answered by wearing the strap and watching
         the type-0x2F deep-buffer capture stop, not by this report.
       • This does not restore a snapshot. NOOP never read these values before first writing them, so the
-        strap's pre-NOOP state is unknown. The honest claim is "cleared the flags NOOP set".
+        strap's pre-NOOP state is unknown. The honest claim is "cleared the flags Noor set".
       • disable_pip_r26_packets inverts: clearing it is expected to let PIP R26 packets flow AGAIN. That is
         the pre-R22 behaviour and is intended.
     """

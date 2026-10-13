@@ -97,11 +97,11 @@ public enum AccentColor: String, CaseIterable, Identifiable, Sendable {
     /// The custom colour's hex, kept separate so switching away from `.custom` and back keeps the choice.
     public static let customHexKey = "accent.customHex"
     /// Seeds the custom picker (mint) so a fresh `.custom` selection is not black.
-    public static let defaultCustomHex = "#149A78"
+    public static let defaultCustomHex = "#CCFF00"
 
     public var label: String {
         switch self {
-        case .mint:      return String(localized: "Mint", bundle: .module)
+        case .mint:      return String(localized: "Neon", bundle: .module)
         case .whoopBlue: return String(localized: "WHOOP Blue", bundle: .module)
         case .custom:    return String(localized: "Custom", bundle: .module)
         }

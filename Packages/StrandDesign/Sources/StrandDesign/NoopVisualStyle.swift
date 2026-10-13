@@ -7,24 +7,24 @@ import SwiftUI
 // bindings, while cards, gauges, typography, and chrome share one maintainable source of truth.
 
 public enum NoopVisualStyle {
-    // Neutral, low-chroma surfaces sampled from the supplied dark-mode reference.
-    public static let canvas = Color(light: "#F3F4F6", dark: "#1D1E23")
-    public static let surface = Color(light: "#FFFFFF", dark: "#2A2C34")
-    public static let surfaceTop = Color(light: "#FFFFFF", dark: "#30323B")
-    public static let surfaceBottom = Color(light: "#F4F5F7", dark: "#282A31")
-    public static let inset = Color(light: "#E8E9ED", dark: "#23252C")
+    // Noor: pure-neutral monochrome surfaces; the "mint" tokens carry the single neon-volt accent.
+    public static let canvas = Color(light: "#F4F4F4", dark: "#0B0B0B")
+    public static let surface = Color(light: "#FFFFFF", dark: "#161616")
+    public static let surfaceTop = Color(light: "#FFFFFF", dark: "#1B1B1B")
+    public static let surfaceBottom = Color(light: "#F6F6F6", dark: "#131313")
+    public static let inset = Color(light: "#EBEBEB", dark: "#101010")
 
-    public static let border = Color(light: "#D8DAE0", dark: "#373A44")
-    public static let borderHighlight = Color(light: "#FFFFFF", dark: "#4B4E59")
-    public static let divider = Color(light: "#E4E5E9", dark: "#383A43")
+    public static let border = Color(light: "#DCDCDC", dark: "#2A2A2A")
+    public static let borderHighlight = Color(light: "#FFFFFF", dark: "#383838")
+    public static let divider = Color(light: "#E6E6E6", dark: "#262626")
 
-    public static let primaryText = Color(light: "#17181C", dark: "#F7F7FA")
-    public static let secondaryText = Color(light: "#555861", dark: "#C3C4CA")
-    public static let tertiaryText = Color(light: "#7D808A", dark: "#7D7F88")
+    public static let primaryText = Color(light: "#0F0F0F", dark: "#F5F5F5")
+    public static let secondaryText = Color(light: "#555555", dark: "#BDBDBD")
+    public static let tertiaryText = Color(light: "#808080", dark: "#7A7A7A")
 
-    public static let mint = Color(light: "#149A78", dark: "#69DDB8")
-    public static let mintDeep = Color(light: "#0D765C", dark: "#13A982")
-    public static let mintGlow = Color(light: "#38C99E", dark: "#54E6BD")
+    public static let mint = Color(light: "#5A7300", dark: "#CCFF00")
+    public static let mintDeep = Color(light: "#465900", dark: "#A3D600")
+    public static let mintGlow = Color(light: "#6E8C00", dark: "#E0FF66")
 
     public static let cardRadius: CGFloat = 22
     public static let compactRadius: CGFloat = 16
