@@ -522,6 +522,8 @@ struct LiquidScoreGauge: View {
     var decimals: Int = 0
     /// Optional caption under the number (nil = Home hero: number only).
     var captionText: String? = nil
+    /// Optional small unit after the number (Noor: "%" on Sleep and Recovery).
+    var unit: String? = nil
     var numberColor: Color = StrandPalette.textPrimary
     var captionColor: Color = StrandPalette.textTertiary
     /// Forwarded to `LiquidVessel` so a gauge inside a link still splashes AND still navigates (#1995).
@@ -539,10 +541,14 @@ struct LiquidScoreGauge: View {
                          tapPassesThrough: tapPassesThrough)
                 .frame(width: diameter, height: diameter)
             VStack(spacing: captionText == nil ? 0 : 1) {
-                Group {
+                HStack(alignment: .firstTextBaseline, spacing: 1) {
                     if score != nil {
                         CountUpNumber(value: shown, font: centerFont, decimals: decimals)
                             .tracking(-diameter * 0.012)
+                        if let unit {
+                            Text(unit).font(StrandFont.rounded(diameter * 0.15, weight: .semibold))
+                                .foregroundStyle(captionColor)
+                        }
                     } else {
                         Text("–").font(centerFont)
                     }

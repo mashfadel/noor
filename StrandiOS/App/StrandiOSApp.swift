@@ -62,7 +62,15 @@ struct StrandiOSApp: App {
         UserDefaults.standard.register(defaults: [PuffinExperiment.autoDetectWorkoutsKey: true,
                                                   UnitPrefs.effortScaleKey: EffortScale.whoop.rawValue,
                                                   // The beta Live Session row stays off Today (still reachable from "+").
-                                                  LiveSessionPrefs.betaKey: false])
+                                                  LiveSessionPrefs.betaKey: false,
+                                                  // Live HR always on: hold the strap's realtime stream open whenever
+                                                  // it is connected (not only while a Live screen is up), all day
+                                                  // rather than overnight only. Also gives denser R-R for HRV.
+                                                  PuffinExperiment.keepRealtimeForDataKey: true,
+                                                  PuffinExperiment.continuousHrvOvernightOnlyKey: false,
+                                                  // ...and protect the strap: at ≤20% strap battery the background
+                                                  // stream pauses and the sync cadence stretches.
+                                                  PuffinExperiment.powerSavingKey: true])
         #if DEBUG
         // DEBUG-only promo-screenshot harness: when launched with `--demo-hour <Int>`, pin Today to that
         // hour's day-cycle scene + a per-hour stat frame. No-op (active stays nil) when the arg is absent.

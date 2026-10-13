@@ -369,6 +369,7 @@ struct LiquidTodayView: View {
                         case .hero:
                             heroCard
                             if chargeLegacyRRGap { ChargeLegacyRRGapNote() }
+                            if selectedDayOffset == 0 { myDaySection }
                         case .liveSession: if liveSessionsBeta { liveSessionStartRow }
                         case .synthesis: synthesisSection
                         case .keyMetrics: keyMetricsSection
@@ -573,83 +574,173 @@ struct LiquidTodayView: View {
 
     // MARK: - Scene (sky title + controls + hero)
 
+    /// Noor header (WHOOP-style): you on the left, a glass "‹ TODAY ›" day pill in the middle, the
+    /// strap on the right. The pill's arrows step days, its label opens the calendar; swipe still works.
     private var scene: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            ZStack(alignment: .topTrailing) {
-                Button { showDayPicker = true } label: {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(dayTitle)
-                            .font(StrandFont.rounded(28))
-                            .foregroundStyle(StrandPalette.textPrimary)
-                            .shadow(color: .black.opacity(0.4), radius: 10, y: 1)
-                        Text(dateLine)
-                            .font(StrandFont.caption)
-                            .foregroundStyle(StrandPalette.textSecondary)
-                            .shadow(color: .black.opacity(0.35), radius: 8, y: 1)
-                    }
-                    .contentShape(Rectangle())
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("\(dayTitle). Tap to pick a day, swipe to change day.")
-                .popover(isPresented: $showDayPicker) {
-                    DatePicker("", selection: dayPickerBinding, in: ...Repository.logicalDay(Date()),
-                               displayedComponents: [.date])
-                        .datePickerStyle(.graphical)
-                        .labelsHidden()
-                        .padding(12)
-                        .frame(minWidth: 320, minHeight: 360)
-                        .liquidPopoverAdaptation()
-                }
-                // Long names fade beneath the trailing controls while an expanded transient control
-                // participates in layout and pushes its preceding siblings left. The reserve is the
-                // cluster's MEASURED width, not a constant: a constant is only ever right for the exact
-                // set of controls it was written against, and this row has already gained one (Customize,
-                // #1207) since. Measuring also means the fade tracks the sync capsule as it expands,
-                // which is the push-left behaviour rather than a separate approximation of it.
-                .headerTrailingControlFadeMask(reserving: headerControlsWidth)
-                HStack(spacing: headerClusterSpacing) {
-                    // Profile pic (the one set in Settings) → opens Settings, matching the classic Today.
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
                     Button { showSettings = true } label: {
-                        Color.clear.frame(
-                            width: NoopMetrics.compactControlSize,
-                            height: NoopMetrics.compactControlSize
-                        )
-                    }
-                    .nativeLiquidGlassHeaderButton()
-                    .overlay {
-                        GeometryReader { proxy in
-                            let diameter = min(proxy.size.width, proxy.size.height)
-                            ProfileAvatarView(imageData: profile.avatarImageData, size: diameter)
-                                .frame(width: diameter, height: diameter)
-                                .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
-                        }
-                        .allowsHitTesting(false)
-                    }
-                    .nativeLiquidGlassPhotoFinish()
-                    .accessibilityLabel("Profile and settings")
-                    // Noor: "+" lives in the tab bar and Customize at the foot of Today, so the header
-                    // keeps only the profile and the strap.
-                    LiquidBatteryButton()
+                    Color.clear.frame(
+                        width: NoopMetrics.compactControlSize,
+                        height: NoopMetrics.compactControlSize
+                    )
                 }
-                .background(
+                .nativeLiquidGlassHeaderButton()
+                .overlay {
                     GeometryReader { proxy in
-                        Color.clear.preference(
-                            key: HeaderControlsWidthKey.self,
-                            value: proxy.size.width
-                        )
+                        let diameter = min(proxy.size.width, proxy.size.height)
+                        ProfileAvatarView(imageData: profile.avatarImageData, size: diameter)
+                            .frame(width: diameter, height: diameter)
+                            .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
                     }
-                )
-                .zIndex(1)
+                    .allowsHitTesting(false)
+                }
+                .nativeLiquidGlassPhotoFinish()
+                .accessibilityLabel("Profile and settings")
+                Spacer(minLength: 8)
+                dayPill
+                Spacer(minLength: 8)
+                LiquidBatteryButton()
             }
-            .onPreferenceChange(HeaderControlsWidthKey.self) { measured in
-                // Ignore sub-point churn so a rounding wobble cannot re-render the mask every frame.
-                guard measured > 0, abs(measured - headerControlsWidth) > 0.5 else { return }
-                headerControlsWidth = measured
-            }
-            // Noor: no wordmark here; the dials sit right under the header.
-            Color.clear.frame(height: 18)
+            Text(dateLine)
+                .font(StrandFont.rounded(13, weight: .medium))
+                .foregroundStyle(StrandPalette.textTertiary)
+                .padding(.top, 10)
+                .padding(.bottom, 6)
+                .accessibilityHidden(true)
         }
+    }
+
+    private var dayPill: some View {
+        HStack(spacing: 2) {
+            Button { stepDay(+1) } label: {
+                Image(systemName: "chevron.left").font(.system(size: 13, weight: .bold))
+                    .frame(width: 34, height: 34).contentShape(Rectangle())
+            }
+            .disabled(selectedDayOffset >= earliestDayOffset)
+            .accessibilityLabel("Previous day")
+            Button { showDayPicker = true } label: {
+                Text(dayTitle.uppercased())
+                    .font(StrandFont.rounded(13, weight: .semibold))
+                    .tracking(1.4)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .frame(minWidth: 84)
+                    .padding(.vertical, 8)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("\(dayTitle). Tap to pick a day.")
+                .popover(isPresented: $showDayPicker) {
+                DatePicker("", selection: dayPickerBinding, in: ...Repository.logicalDay(Date()),
+                           displayedComponents: [.date])
+                    .datePickerStyle(.graphical)
+                    .labelsHidden()
+                    .padding(12)
+                    .frame(minWidth: 320, minHeight: 360)
+                    .liquidPopoverAdaptation()
+            }
+            // Long names fade beneath the trailing controls while an expanded transient control
+            // participates in layout and pushes its preceding siblings left. The reserve is the
+            // cluster's MEASURED width, not a constant: a constant is only ever right for the exact
+            // set of controls it was written against, and this row has already gained one (Customize,
+            // #1207) since. Measuring also means the fade tracks the sync capsule as it expands,
+            // which is the push-left behaviour rather than a separate approximation of it.
+            Button { stepDay(-1) } label: {
+                Image(systemName: "chevron.right").font(.system(size: 13, weight: .bold))
+                    .frame(width: 34, height: 34).contentShape(Rectangle())
+            }
+            .disabled(selectedDayOffset == 0)
+            .accessibilityLabel("Next day")
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(StrandPalette.textPrimary)
+        .padding(.horizontal, 4)
+        #if os(iOS)
+        .glassEffect(.regular, in: Capsule())
+        #else
+        .background(Capsule().fill(StrandPalette.surfaceRaised))
+        #endif
+    }
+
+    private func stepDay(_ delta: Int) {
+        let next = Self.clampedDayOffset(current: selectedDayOffset, delta: delta, maxOffset: earliestDayOffset)
+        guard next != selectedDayOffset else { return }
+        withAnimation(StrandMotion.interactive) { selectedDayOffset = next }
+    }
+
+    // MARK: - My Day (Noor, WHOOP-style)
+
+    /// "My Day": today's activities with one-tap add/start, and tonight's sleep planner.
+    private var myDaySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("My Day")
+                .font(StrandFont.rounded(24, weight: .semibold))
+                .foregroundStyle(StrandPalette.textPrimary)
+                .padding(.top, 8)
+            myDayCard(title: "Today's activities", chevron: false, action: nil) {
+                HStack(spacing: 10) {
+                    myDayButton("Add activity", icon: "plus") { router.requestQuickActions() }
+                    myDayButton("Start activity", icon: "stopwatch") { router.requestedDestination = .activeWorkout }
+                }
+            }
+            myDayCard(title: "Tonight's sleep", chevron: true, action: { router.openAlarms() }) {
+                HStack(spacing: 14) {
+                    Image(systemName: "moon.stars.fill")
+                        .font(.system(size: 22))
+                        .foregroundStyle(StrandPalette.restColor)
+                        .shadow(color: StrandPalette.restColor.opacity(0.6), radius: 8)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Plan your night")
+                            .font(StrandFont.rounded(16, weight: .semibold))
+                            .foregroundStyle(StrandPalette.textPrimary)
+                        Text("Bedtime guidance and a smart alarm that wakes you in light sleep.")
+                            .font(StrandFont.rounded(13, weight: .regular))
+                            .foregroundStyle(StrandPalette.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                myDayButton("Set alarm", icon: "alarm") { router.openAlarms() }
+                    .padding(.top, 4)
+            }
+        }
+    }
+
+    private func myDayCard<Content: View>(title: LocalizedStringKey, chevron: Bool, action: (() -> Void)?,
+                                          @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text(title).textCase(.uppercase)
+                    .font(StrandFont.rounded(12, weight: .semibold)).tracking(1.4)
+                    .foregroundStyle(StrandPalette.textPrimary)
+                Spacer()
+                if chevron {
+                    Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(StrandPalette.textTertiary)
+                }
+            }
+            .contentShape(Rectangle())
+            .onTapGesture { action?() }
+            content()
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(NoopPanelSurface(cornerRadius: 22))
+    }
+
+    private func myDayButton(_ title: LocalizedStringKey, icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: icon).font(.system(size: 14, weight: .semibold))
+                Text(title).textCase(.uppercase)
+                    .font(StrandFont.rounded(12, weight: .semibold)).tracking(1.2)
+            }
+            .foregroundStyle(StrandPalette.textPrimary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.white.opacity(0.07)))
+            .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(Color.white.opacity(0.06), lineWidth: 0.75))
+        }
+        .buttonStyle(LiquidPressStyle())
     }
 
     /// One-tap Live Session start (silent guardian, beta) — sits directly under the hero scores, the
@@ -695,7 +786,7 @@ struct LiquidTodayView: View {
             // today's own accumulation, so yesterday's number would be a false statement, not a stale one.
             // Noor: WHOOP order — Sleep · Recovery · Strain.
             HeroScoreCell(label: String(localized: "Sleep"), score: restScore, tint: StrandPalette.restColor,
-                          animated: dataLoaded, onGuide: { guideSection = .rest },
+                          animated: dataLoaded, onGuide: { guideSection = .rest }, unit: "%",
                           detailRoute: .metric(HeroRingMetric.rest))
                 .overlay(alignment: .top) {
                     if let sourceLabel = heroSourceLabel {
@@ -710,7 +801,7 @@ struct LiquidTodayView: View {
                 }
             HeroScoreCell(label: String(localized: "Recovery"), score: chargeDisplay.pct,
                           tint: chargeDisplay.pct.map { StrandPalette.recoveryColor($0) } ?? StrandPalette.chargeColor,
-                          animated: dataLoaded, onGuide: { guideSection = .charge },
+                          animated: dataLoaded, onGuide: { guideSection = .charge }, unit: "%",
                           detailRoute: .metric(HeroRingMetric.charge))
             // #45: the hero Effort must honour the user's Effort scale like every other Effort read-out.
             // Show the value on the chosen scale (0–100 or WHOOP 0–21) with the matching vessel max, and
@@ -2232,6 +2323,8 @@ private struct HeroScoreCell: View {
     // Decimal places for the displayed number. 0 keeps the whole-number scores; the WHOOP 0–21 Effort
     // scale passes 1 to match the app-wide one-decimal `effortDisplay` convention (#45).
     var decimals: Int = 0
+    /// Small unit after the number ("%" for Sleep and Recovery).
+    var unit: String? = nil
     /// Where the GAUGE taps through to, or nil to keep the ring inert (#1995).
     ///
     /// Same `TabRoute.metric(key)` the Recovery Vitals rows use, so a ring and the Key-Metrics tile for
@@ -2252,6 +2345,7 @@ private struct HeroScoreCell: View {
             animated: animated,
             maxValue: maxValue,
             decimals: decimals,
+            unit: unit,
             tapPassesThrough: detailRoute != nil
         )
         if let detailRoute {

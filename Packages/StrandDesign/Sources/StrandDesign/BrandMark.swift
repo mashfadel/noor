@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - BrandMark — the Noor logo mark (light rising: three score arcs)
+// MARK: - BrandMark — the Noor logo mark (the living orb of light)
 //
 // (Upstream NOOP notes below describe the original Titanium & Gold mark this replaced.)
 //
@@ -32,51 +32,82 @@ public struct BrandMark: View {
         self.size = size
     }
 
-    // Noor mark: light rising over a horizon — three concentric arcs filling like dials (Sleep
-    // violet→pink, Recovery green, Strain blue→cyan) around a white-hot point of light. Mirrors the
-    // app icon (Tools/noor/make_icon.swift).
-    private struct Arc { let radius: CGFloat; let fill: CGFloat; let colors: [Color]; let glow: Color }
-    private var arcs: [Arc] {[
-        Arc(radius: 0.344, fill: 1.00, colors: [Color(hex: "#A24BFF"), NoopVisualStyle.neonPink], glow: NoopVisualStyle.neonPink),
-        Arc(radius: 0.256, fill: 0.78, colors: [Color(hex: "#00C46A"), NoopVisualStyle.neonGreen], glow: NoopVisualStyle.neonGreen),
-        Arc(radius: 0.168, fill: 0.56, colors: [Color(hex: "#2E6BFF"), Color(hex: "#33E1FF")], glow: Color(hex: "#33E1FF")),
-    ]}
-    private var lineWidth: CGFloat { size * 0.053 }
-    private var rimWidth: CGFloat { max(1, size * 0.008) }
+    /// Breathe slowly (a living light). Off for tiny or static uses.
+    public var breathing: Bool = true
+
+    public init(size: CGFloat = 120, breathing: Bool) {
+        self.size = size
+        self.breathing = breathing
+    }
 
     public var body: some View {
+        NoorOrb(size: size, breathing: breathing)
+            .frame(width: size, height: size)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text("Noor"))
+            .accessibilityAddTraits(.isImage)
+    }
+}
+
+/// The Noor orb: a living sphere of light with the brand aurora (green, aqua, blue, pink, violet) inside,
+/// a soft halo, a glint and a rim light. Mirrors the app icon (Tools/noor/make_icon.swift orb).
+public struct NoorOrb: View {
+    public var size: CGFloat
+    public var breathing: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var inhale = false
+
+    public init(size: CGFloat, breathing: Bool = true) {
+        self.size = size
+        self.breathing = breathing
+    }
+
+    private func blob(_ color: Color, _ x: CGFloat, _ y: CGFloat, _ r: CGFloat, _ a: Double) -> some View {
+        Circle()
+            .fill(RadialGradient(colors: [color.opacity(a), color.opacity(a * 0.45), color.opacity(0)],
+                                 center: .center, startRadius: 0, endRadius: size * r))
+            .frame(width: size * r * 2, height: size * r * 2)
+            .offset(x: size * x, y: size * y)
+            .blendMode(.screen)
+    }
+
+    public var body: some View {
+        let d = size * 0.62   // sphere diameter inside the tile
         ZStack {
-            Circle()
-                .fill(LinearGradient(colors: [Color(hex: "#161616"), Color(hex: "#000000")],
-                                     startPoint: .top, endPoint: .bottom))
-                .overlay(Circle().strokeBorder(StrandPalette.hairline, lineWidth: rimWidth))
-            Canvas { ctx, sz in
-                let center = CGPoint(x: sz.width / 2, y: sz.height * 0.62)
-                for arc in arcs {
-                    var path = Path()
-                    path.addArc(center: center, radius: arc.radius * sz.width, startAngle: .degrees(180),
-                                endAngle: .degrees(180 + 180 * arc.fill), clockwise: false)
-                    let style = StrokeStyle(lineWidth: lineWidth, lineCap: .round)
-                    var glow = ctx
-                    glow.addFilter(.blur(radius: lineWidth * 0.8))
-                    glow.stroke(path, with: .color(arc.glow.opacity(0.6)), style: style)
-                    ctx.stroke(path, with: .linearGradient(Gradient(colors: arc.colors),
-                        startPoint: CGPoint(x: center.x - arc.radius * sz.width, y: center.y),
-                        endPoint: CGPoint(x: center.x + arc.radius * sz.width, y: center.y)), style: style)
-                }
-                let core = size * 0.066
-                ctx.fill(Path(ellipseIn: CGRect(x: center.x - core * 2.2, y: center.y - core * 2.2,
-                                               width: core * 4.4, height: core * 4.4)),
-                         with: .radialGradient(Gradient(colors: [.white.opacity(0.55), NoopVisualStyle.neonAqua.opacity(0)]),
-                                               center: center, startRadius: 0, endRadius: core * 2.2))
-                ctx.fill(Path(ellipseIn: CGRect(x: center.x - core / 2, y: center.y - core / 2, width: core, height: core)),
-                         with: .color(.white))
+            // Halo spilling into the dark.
+            blob(NoopVisualStyle.neonGreen, -0.10, -0.07, 0.52, 0.30)
+            blob(NoopVisualStyle.neonBlue, 0.13, 0.04, 0.50, 0.30)
+            blob(NoopVisualStyle.neonPink, -0.06, 0.15, 0.48, 0.28)
+            // The aurora, clipped to the sphere.
+            ZStack {
+                Color(hex: "#05060A")
+                blob(NoopVisualStyle.neonGreen, -0.16, -0.14, 0.35, 1.0)
+                blob(NoopVisualStyle.neonAqua, 0.02, -0.22, 0.25, 0.75)
+                blob(NoopVisualStyle.neonBlue, 0.20, 0.03, 0.33, 1.0)
+                blob(NoopVisualStyle.neonPink, -0.11, 0.20, 0.32, 1.0)
+                blob(Color(hex: "#8A4BFF"), 0.15, 0.24, 0.23, 0.85)
+                blob(NoopVisualStyle.neonAqua, 0.01, -0.02, 0.22, 0.8)
+                blob(.white, -0.01, -0.03, 0.12, 0.35)
+                // Depth toward the rim, then a glint.
+                Circle().fill(RadialGradient(colors: [.clear, .black.opacity(0.55)], center: UnitPoint(x: 0.44, y: 0.42),
+                                             startRadius: d * 0.25, endRadius: d * 0.62))
+                Circle().fill(RadialGradient(colors: [.white.opacity(0.7), .white.opacity(0)], center: .center,
+                                             startRadius: 0, endRadius: size * 0.062))
+                    .frame(width: size * 0.13, height: size * 0.13)
+                    .offset(x: -size * 0.127, y: -size * 0.176)
             }
+            .frame(width: d, height: d)
+            .clipShape(Circle())
+            .overlay(Circle().strokeBorder(Color.white.opacity(0.12), lineWidth: max(0.5, size * 0.003)))
         }
         .frame(width: size, height: size)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("Noor"))
-        .accessibilityAddTraits(.isImage)
+        .scaleEffect(breathing && !reduceMotion ? (inhale ? 1.035 : 0.985) : 1)
+        .brightness(breathing && !reduceMotion ? (inhale ? 0.04 : 0) : 0)
+        .onAppear {
+            guard breathing, !reduceMotion else { return }
+            withAnimation(.easeInOut(duration: 2.8).repeatForever(autoreverses: true)) { inhale = true }
+        }
+        .drawingGroup()
     }
 }
 
