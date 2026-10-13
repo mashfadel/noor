@@ -565,6 +565,16 @@ struct RootTabView: View {
     /// list is shorter at rest without dropping a single row. The grouped card is unchanged: a single
     /// `NoopCard` holding a `VStack(spacing: 0)` whose `MoreRow`s draw their own hairlines, clipped to the
     /// card's rounded shape so the last divider is trimmed inside the corners. Same idiom Settings/Health use.
+    /// Noor: each More group carries its own neon, so the index has rhythm instead of one flat colour.
+    private static func moreTint(for section: String) -> Color {
+        switch section {
+        case "Insights": return NoopVisualStyle.neonAqua
+        case "Body": return NoopVisualStyle.neonPink
+        case "Data": return NoopVisualStyle.neonBlue
+        default: return NoopVisualStyle.neonGreen
+        }
+    }
+
     @ViewBuilder
     private func moreSection<Rows: View>(_ title: String,
                                          @ViewBuilder rows: @escaping () -> Rows) -> some View {
@@ -604,6 +614,7 @@ struct RootTabView: View {
                 // divider overlay) so the group reads as one continuous grouped list, matching Settings/Health.
                 NoopCard(padding: 0) {
                     VStack(spacing: 0) { rows() }
+                        .environment(\.moreTint, Self.moreTint(for: title))
                         // Clip the rows column to the card's rounded shape so the last row's bottom hairline is
                         // trimmed inside the corners (the card draws its surface in the BACKGROUND and doesn't
                         // clip content itself, so without this the final divider would run past the rounded edge).
@@ -663,7 +674,16 @@ private enum MoreDestination: Hashable {
 /// the SF Symbol icon tinted `StrandPalette.accent`, the title in the body text colour, a `Spacer`, and a
 /// trailing `chevron.right` in `textTertiary`. ~44pt min height + the card's row insets keep the whole row a
 /// comfortable tap target.
+private struct MoreTintKey: EnvironmentKey { static let defaultValue: Color = NoopVisualStyle.neonAqua }
+private extension EnvironmentValues {
+    var moreTint: Color {
+        get { self[MoreTintKey.self] }
+        set { self[MoreTintKey.self] = newValue }
+    }
+}
+
 private struct MoreRow: View {
+    @Environment(\.moreTint) private var tint
     let title: LocalizedStringKey
     let icon: String
     let route: MoreDestination
@@ -678,10 +698,14 @@ private struct MoreRow: View {
                 // Pin the icon to the accent explicitly. A plain inherited tint gets re-resolved by iOS to
                 // its default blue a beat after first render — so the icons flashed green→blue (#184). The
                 // explicit foregroundStyle on the image overrides that; the title keeps the primary colour.
+                // Noor: the icon sits in a small glowing tile in its section's neon.
                 Image(systemName: icon)
-                    .font(.system(size: 17, weight: .regular))
-                    .foregroundStyle(StrandPalette.accent)
-                    .frame(width: 26, alignment: .center)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(tint)
+                    .frame(width: 32, height: 32)
+                    .background(RoundedRectangle(cornerRadius: 9, style: .continuous).fill(tint.opacity(0.14)))
+                    .overlay(RoundedRectangle(cornerRadius: 9, style: .continuous).strokeBorder(tint.opacity(0.22), lineWidth: 0.75))
+                    .shadow(color: tint.opacity(0.25), radius: 6)
                 Text(title)
                     .font(StrandFont.body)
                     .foregroundStyle(StrandPalette.textPrimary)
@@ -691,7 +715,7 @@ private struct MoreRow: View {
                     .foregroundStyle(StrandPalette.textTertiary)
             }
             .padding(.horizontal, 16)
-            .frame(minHeight: 44)
+            .frame(minHeight: 56)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
             // Hairline under every row; the grouped container clips the last one's overflow so the bottom
@@ -699,8 +723,8 @@ private struct MoreRow: View {
             .overlay(alignment: .bottom) {
                 Rectangle()
                     .fill(StrandPalette.hairline)
-                    .frame(height: 1)
-                    .padding(.leading, 16)
+                    .frame(height: 0.5)
+                    .padding(.leading, 62)
             }
         }
         .buttonStyle(.plain)

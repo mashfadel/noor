@@ -541,15 +541,22 @@ struct SleepView: View {
             if let score {
                 // Same LiquidVessel gauge as Home (`LiquidTodayView` / `HeroScoreCell`).
                 VStack(spacing: 8) {
-                    LiquidScoreGauge(
-                        score: score,
-                        tint: StrandPalette.restColor,
-                        diameter: 184,
-                        animated: true,
-                        captionText: String(localized: "of 100"),
-                        numberColor: Color.white.opacity(0.98),
-                        captionColor: Color.white.opacity(0.52)
-                    )
+                    // Noor: the score orb (rim lit by the score, specks of light inside).
+                    NoorScoreOrb(diameter: 220, tint: StrandPalette.restColor, accent: StrandPalette.restDeep,
+                                 intensity: score / 100) {
+                        VStack(spacing: 2) {
+                            HStack(alignment: .firstTextBaseline, spacing: 1) {
+                                CountUpNumber(value: score, font: StrandFont.rounded(64, weight: .semibold), decimals: 0)
+                                    .tracking(-2)
+                                Text("%").font(StrandFont.rounded(24, weight: .semibold)).opacity(0.6)
+                            }
+                            .foregroundStyle(Color.white)
+                            Text("SLEEP PERFORMANCE")
+                                .font(StrandFont.rounded(10, weight: .semibold)).tracking(1.4)
+                                .foregroundStyle(Color.white.opacity(0.6))
+                        }
+                    }
+                    .padding(.vertical, 18)
                     Text(sleepScoreWord(score))
                         .font(StrandFont.subhead.weight(.semibold))
                         .foregroundStyle(Color.white.opacity(0.90))
@@ -593,7 +600,10 @@ struct SleepView: View {
     /// Fixed night-scene band behind Sleep scroll content — same ScreenScaffold.topBackground pattern
     /// as Home's sky. Tall enough for safe-area + hero; fades to surfaceBase before the first card.
     private var sleepNightTopBackground: some View {
-        SleepPerformanceNightScene()
+        // Noor: black with a faint pink-violet glow where the orb sits (no stock night photo).
+        RadialGradient(colors: [StrandPalette.restDeep.opacity(0.22), StrandPalette.restColor.opacity(0.06), .clear],
+                       center: UnitPoint(x: 0.5, y: 0.42), startRadius: 0, endRadius: 320)
+            .background(StrandPalette.surfaceBase)
             .frame(maxWidth: .infinity)
             .frame(height: 440, alignment: .top)
             .allowsHitTesting(false)

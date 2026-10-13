@@ -27,6 +27,8 @@ struct StrandiOSApp: App {
     /// NOOP's live heart rate banner. Built in `init` and fed from there (`LiveActivityController.follow`), not from
     /// a view: a process iOS starts in the background need not build one.
     @State private var liveActivity: LiveActivityController
+    /// Noor: whether the foreground currently holds a live-HR stream (balanced start/stop on scene phase).
+    @State private var foregroundHoldsLiveHR = false
     /// The Lift Log session's own Live Activity. Separate from the live-HR one above: while a gym
     /// session is open this is the banner that matters (it carries the heart rate too), so the HR
     /// activity is suppressed rather than stacked beside it. Built in `init`, where the strap log it
@@ -365,6 +367,11 @@ struct StrandiOSApp: App {
         // safe no-op until the user opts in.
         .onChange(of: scenePhase, initial: true) { _, phase in
             if phase == .active {
+                // Noor: live HR whenever the app is on screen, independent of the always-on capture setting.
+                if !foregroundHoldsLiveHR {
+                    foregroundHoldsLiveHR = true
+                    model.startRealtimeHR()
+                }
                 CoachBriefScheduler.activateIfEnabled { await model.coach.generateBrief() }
                 model.drainPendingIntents(router: router)
                 // iOS starts a Lift Log banner only for an app on screen, so a banner lost while NOOP was in
@@ -418,6 +425,10 @@ struct StrandiOSApp: App {
                     await watch.pushLatest(from: model)
                 }
             } else if phase == .background {
+                if foregroundHoldsLiveHR {
+                    foregroundHoldsLiveHR = false
+                    model.stopRealtimeHR()
+                }
                 // Re-submit on every transition because iOS may discard an old best-effort request.
                 HealthWritebackBackgroundScheduler.updateSchedule(
                     isAuthorized: health.auth == .authorized)
