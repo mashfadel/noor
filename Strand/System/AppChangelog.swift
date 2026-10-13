@@ -32,8 +32,8 @@ enum AppChangelog {
                 "**A Deep Timeline you can actually read (#2368, #2382, thanks @andigandhi).** X-axis labels and per-minute zoom ticks on Android and on iOS and macOS, and the zoom and pan no longer snap back where they were released.",
                 "**Sleep that reports what it used (#2576, #2550, #2372, thanks @UtkuDenizAltiok and @kavemang).** The deep base prior is lowered to 0.15 on PSG evidence, scored subject by subject rather than in aggregate. The hypnogram read-out matches its own rows in order and in value, stage rows align with chart depth, and two device sources recording the same night are collapsed into one.",
                 "**An Oura ring that keeps its place (#2442, #2457, #2455, #2412, #2564, #2624, #2433, #2443, thanks @pipiche38).** A sleep-window stash survives a reconnect, an interrupted drain banks its resume cursor so the next connect does not store again what it already holds, a night the drain served twice is readable, the hypnogram's padding tail is no longer laid out as elapsed time, and a read crossing wake keeps the daytime beats. The Experimental all-day heart rate and HRV holds its daytime arming for the learned night rather than for every screen-off.",
-                "**A Charge that agrees with itself (#2466, #2666, #2469, thanks @andremiliano and @DX23876).** The breakdown reads the headline's own baselines rather than resolving its own, an old WHOOP import no longer anchors them, and there is now a written rule for which nights a Charge baseline reads.",
-                "**A quicker Apple app (#2633, #2634, #2635, #2636, #2637, #2639, #2640, #2641, #2642, thanks @AlexSchmidt1999).** Live Today Effort computes off the main actor, resolved Trends windows are reused across unrelated publications, HealthKit observer deltas are bounded to the recent sync window, shared chart styles resolve once per update, full-resolution chart selection uses a date-ordered lookup, and the shared panel background composites fewer layers.",
+                "**A Recovery that agrees with itself (#2466, #2666, #2469, thanks @andremiliano and @DX23876).** The breakdown reads the headline's own baselines rather than resolving its own, an old WHOOP import no longer anchors them, and there is now a written rule for which nights a Recovery baseline reads.",
+                "**A quicker Apple app (#2633, #2634, #2635, #2636, #2637, #2639, #2640, #2641, #2642, thanks @AlexSchmidt1999).** Live Today Strain computes off the main actor, resolved Trends windows are reused across unrelated publications, HealthKit observer deltas are bounded to the recent sync window, shared chart styles resolve once per update, full-resolution chart selection uses a date-ordered lookup, and the shared panel background composites fewer layers.",
                 "**Shortcuts, Health and the Lock Screen (#2340, thanks @rodrigosa7 and @paradix86).** A recorded GPS route comes back through Shortcuts as GPX or FIT, and the picker says what a FIT leaves out. The Apple Health export names its chart heart-rate sources and refreshes write authorization. Android reads your profile weight from Health Connect. Live notifications now have one switch each for what Noor shows on the Lock Screen, and each switch touches only its own.",
                 "**Smaller corrections.** Android honours your selected accent in Material controls and rejects a malformed custom RGB value (#2627). A strap last seen low that has not been heard from since now says so. Vital dates carry their weekday (#2622, thanks @kavemang). Today explains when Start session is available, and the Sleep movement strip says its scale is per-night. The 4.0 broadcast row, the Key Metrics header and the hypnogram read-out all stopped naming something they were not showing (#2377, #2400, thanks @andremiliano).",
             ]
@@ -84,7 +84,7 @@ enum AppChangelog {
                 "**WHOOP 5 readings corrected (#2046, #2042, #2056, thanks @Trillient).** R-R intervals are read in the units the strap actually sends, which feeds HRV. Skin temperature now reaches recovery scoring before the score is computed rather than after. Both platforms carry tests covering the gaps these came from.",
                 "**Backups that check themselves (#2086).** Every export path now verifies the file it actually wrote, so a truncated backup is caught when it is made instead of when you need it. When SQLite does complain, the message is shown in full and can be copied (#2084).",
                 "**A coach that holds on to your conversation (#2058, #2061).** A rejected API key can be corrected without losing the thread you were in. The coach is told what the workout was rather than only that one happened, the consent screen says what it actually sends (#2063), and the morning brief reaches the screen it was generated for (#2088).",
-                "**Diagnostics that say why, not just how many (#2080, #2094).** A night that missed the re-score cache now names the setting that dropped it. A dropped link is always recorded (#2065), the Live Console reads the device you actually selected (#2076), and the Rest card says why it is waiting on a sync (#2077).",
+                "**Diagnostics that say why, not just how many (#2080, #2094).** A night that missed the re-score cache now names the setting that dropped it. A dropped link is always recorded (#2065), the Live Console reads the device you actually selected (#2076), and the Sleep card says why it is waiting on a sync (#2077).",
                 "**Your Oura serial stays out of the logs (#2095, #2090, thanks @pipiche38).** Serial numbers are masked in the Oura redactors on both platforms, and product-info replies no longer land in the raw diagnostics sidecar.",
                 "**Sharing a Test Centre report (#2096).** The Test Centre now hands you the bundle through the same share sheet the strap log uses, and stops there, instead of steering you into opening an issue.",
                 "**Smaller corrections.** Live heart rate stays armed while the Breathe screen is open (#2036, thanks @kiesstein). Workout actions stay readable over the daytime scene (#2050, thanks @kavemang). A silently dead duplicate string key is gone and the drifted Info.plist is regenerated (#2029, thanks @UtkuDenizAltiok). A manual workout can be entered by its start and end rather than only a duration (#2070), the strap picker seeds from the family actually recorded (#2067), and Today's heart-rate high and low read the samples rather than the mean curve (#2038).",
@@ -138,10 +138,10 @@ enum AppChangelog {
         ),
         Release(
             version: "10.6.0",
-            title: "An Effort scale you choose, a ring that gets to sleep, and far fewer wasted re-scores",
+            title: "An Strain scale you choose, a ring that gets to sleep, and far fewer wasted re-scores",
             date: "August 2026",
             items: [
-                "**Pick how Effort is scored (#1562, #1563).** Banister TRIMP is now wired end to end and selectable, so Effort can follow the method you trust rather than the one that happened to ship. A workout is also scored against the same HRmax as the day containing it (#1565).",
+                "**Pick how Strain is scored (#1562, #1563).** Banister TRIMP is now wired end to end and selectable, so Strain can follow the method you trust rather than the one that happened to ship. A workout is also scored against the same HRmax as the day containing it (#1565).",
                 "**The phone stops re-scoring all night (#1557, #1559).** A background re-score that could not finish used to restart from the beginning, forever. It now runs where it can complete, and the diagnostics say which pass ran and why — so days that quietly refused to compute now compute.",
                 "**The Oura ring is allowed to sleep (#1526, #1550, thanks @pipiche38).** Live-HR daytime mode was being held open whenever nobody was looking at the app, blocking the ring's own overnight sleep suite. Noor now hands the ring back out of daytime mode, on suspend and on teardown.",
                 "**Sleep reads straighter (#1551, #1552, thanks @bartmuskala).** The Classic view draws the night's heart-rate line, and the stage breakdown is ramp-aware with the redundant legend gone.",
@@ -190,20 +190,20 @@ enum AppChangelog {
             title: "Widgets stop inventing numbers, naps count toward sleep debt, and the Android status chips speak your language",
             date: "August 2026",
             items: [
-                "**iPhone widgets showed made-up numbers (#887).** A Home Screen widget that could not read your data fell back to the gallery sample — 72% Charge, 58 bpm, 84% battery — for everyone. It now shows dashes when there is nothing to show, and sample values appear only in the widget gallery.",
-                "**Naps count toward sleep debt (#1041).** A separately-recorded nap now repays debt with its actual asleep minutes. Your debt figure will drop on days you napped, including days already in your history. Rest and the sleep headline still describe the main night only.",
-                "**Manual workouts on a second or re-added strap get their Avg HR back (#836).** A workout logged by hand read its heart rate from a placeholder id, so on a WHOOP 5.0 or a re-paired strap it found an empty window and left Avg HR and Effort blank.",
+                "**iPhone widgets showed made-up numbers (#887).** A Home Screen widget that could not read your data fell back to the gallery sample — 72% Recovery, 58 bpm, 84% battery — for everyone. It now shows dashes when there is nothing to show, and sample values appear only in the widget gallery.",
+                "**Naps count toward sleep debt (#1041).** A separately-recorded nap now repays debt with its actual asleep minutes. Your debt figure will drop on days you napped, including days already in your history. Sleep and the sleep headline still describe the main night only.",
+                "**Manual workouts on a second or re-added strap get their Avg HR back (#836).** A workout logged by hand read its heart rate from a placeholder id, so on a WHOOP 5.0 or a re-paired strap it found an empty window and left Avg HR and Strain blank.",
                 "**A connected strap no longer says it is disconnected (#612).** When the link is up but nothing is arriving, the chip said \"Not recording. Strap not connected\", which was simply false. It now says \"Connected\" and explains what is missing — and on Android that chip, and the score-state card beside it, are finally translated instead of always English.",
-                "**Effort agrees with itself on Today (#1001).** The hero ring knew about the morning's climb while the Key Metrics tile and the chart badge still read the overnight row, so the same day showed 2.3 in one place and 0.5 in two others.",
+                "**Strain agrees with itself on Today (#1001).** The hero ring knew about the morning's climb while the Key Metrics tile and the chart badge still read the overnight row, so the same day showed 2.3 in one place and 0.5 in two others.",
             ]
         ),
         Release(
             version: "9.3.0",
-            title: "Water and caffeine from Apple Health, a sharper Effort score, and an Oura resting-heart-rate fix",
+            title: "Water and caffeine from Apple Health, a sharper Strain score, and an Oura resting-heart-rate fix",
             date: "July 2026",
             items: [
                 "**Water and caffeine import themselves (#949).** Log a drink in Apple Health or Health Connect and it shows up in Noor, kept in its own row so it can never overwrite what you typed by hand. iPhone will ask permission once for the two new data types.",
-                "**Effort is measured more honestly (#963, #983).** Every heart-rate sample is now weighted by its own gap rather than the window's first one, and a saved workout is scored against your measured resting heart rate instead of a hardcoded 60. Your Effort numbers will move — in either direction — including for past days.",
+                "**Strain is measured more honestly (#963, #983).** Every heart-rate sample is now weighted by its own gap rather than the window's first one, and a saved workout is scored against your measured resting heart rate instead of a hardcoded 60. Your Strain numbers will move — in either direction — including for past days.",
                 "**Oura days no longer spike to 90+ resting heart rate (#375).** A nap or a short fragment could outrank the real night and claim the whole day's numbers. Re-import your Oura history to correct days already stored.",
                 "**Sleep staging can't jump from awake to deep (#348).** A transition no scorer should ever emit is now forbidden outright, which is the part of a larger staging change that survived a clean benchmark.",
                 "**The Updates page scrolls, and its release row opens (#984).** Older entries were unreachable and tapping \"what's new\" did nothing but mark it read, so it looked like the entry had been deleted.",
@@ -284,13 +284,13 @@ enum AppChangelog {
         ),
         Release(
             version: "8.6.2",
-            title: "Apple Health export, sleep nights recovered, and imported-ride Effort",
+            title: "Apple Health export, sleep nights recovered, and imported-ride Strain",
             date: "July 2026",
             items: [
                 "**Your data in Apple Health (iPhone) (#249).** Sleep stages, minute-by-minute heart rate, and your workouts now write to Apple Health, so other apps can read them. Thanks vishk23.",
                 "**Sleep nights no longer go missing (#268).** Nights with a few brief heart-rate spikes were being dropped as \"no sleep recorded\" — those nights are recovered now. Thanks tanarchytan.",
                 "**Sleep times and totals read right after an edit (#259).** A corrected bedtime no longer shows the wrong hour on the Sleep tab, and a night can never read as more sleep than time in bed.",
-                "**Imported rides count toward Effort (#137).** On a day you didn't wear the strap, an imported GPX / TCX / FIT ride's real heart rate now lights that day's Effort ring instead of being ignored.",
+                "**Imported rides count toward Strain (#137).** On a day you didn't wear the strap, an imported GPX / TCX / FIT ride's real heart rate now lights that day's Strain ring instead of being ignored.",
                 "**Low-battery heads-up (#250).** Noor warns you when your strap has roughly a day of charge left, on iPhone, Mac and Android. Thanks vishk23.",
                 "**Automatic sync no longer stalls (#266).** A strap whose clock briefly read ahead could stop syncing and freeze the battery reading until you reconnected; it now recovers on its own. Thanks digitalerdude.",
             ]
@@ -312,7 +312,7 @@ enum AppChangelog {
             date: "July 2026",
             items: [
                 "**Overnight HRV reads true, not roughly twice as high (#195).** When cleaning drops a single noisy heartbeat, its neighbours no longer splice together into a phantom spike — the flaw that had some nights reading HRV about 2× too high, and skewing the recovery built on it. iPhone, Mac and Android.",
-                "**The deep-sleep HRV setting takes effect right away (#201).** Switching between whole-night and deep-sleep no longer drops Charge back to \"calibrating\" for several nights — with a few nights of history behind you, the change applies immediately. Thanks digitalerdude.",
+                "**The deep-sleep HRV setting takes effect right away (#201).** Switching between whole-night and deep-sleep no longer drops Recovery back to \"calibrating\" for several nights — with a few nights of history behind you, the change applies immediately. Thanks digitalerdude.",
                 "**Latest Workouts, tidied up (#200).** The Today workout section shows your true most-recent sessions in one clean list, drops the duplicate that appeared when a workout came from more than one source, keeps up when you re-pair your strap, and names more sports. Thanks TheBoroer.",
             ]
         ),
@@ -332,7 +332,7 @@ enum AppChangelog {
             title: "WHOOP-style HRV, warm-ups counted, and clearer cards",
             date: "July 2026",
             items: [
-                "**HRV, the WHOOP way (#141).** A new Settings option computes your nightly HRV over the deep-sleep window — the same slow-wave window WHOOP uses — so the number lines up with what your WHOOP app shows. Whole-night stays the default; switching re-learns your Charge baseline over a few nights.",
+                "**HRV, the WHOOP way (#141).** A new Settings option computes your nightly HRV over the deep-sleep window — the same slow-wave window WHOOP uses — so the number lines up with what your WHOOP app shows. Whole-night stays the default; switching re-learns your Recovery baseline over a few nights.",
                 "**Workouts catch the warm-up (#148).** Auto-detected walks and rides no longer lose their first 10–15 minutes while your heart rate is still climbing — the start now reaches back over the warm-up to when you actually got moving.",
                 "**Fitness Age stops getting stuck on \"No Data\" (#139/#140).** When all your readiness inputs are in, Fitness Age now scores instead of showing an empty gauge, there's a refresh button to recompute on demand, and the card shows how many more nights it needs rather than a dead end.",
                 "**Trends can draw bars (#134).** A new Settings toggle renders the Trends graphs as bar charts, zero-anchored, instead of lines.",
@@ -345,7 +345,7 @@ enum AppChangelog {
             date: "July 2026",
             items: [
                 "**See your raw blood-oxygen signal (WHOOP 4.0).** The Health screen now surfaces the strap's raw red/IR SpO₂ sensor reading natively — honest, uncalibrated data, no export needed. It's not a clinical %, which needs WHOOP's own calibration.",
-                "**Skin temperature and Effort now respect your settings.** The Deep Timeline shows skin temp in °F when you've chosen Fahrenheit, and the Today \"Effort\" ring finally follows your 0–100 vs WHOOP 0–21 scale (with a decimal on the 21 scale).",
+                "**Skin temperature and Strain now respect your settings.** The Deep Timeline shows skin temp in °F when you've chosen Fahrenheit, and the Today \"Strain\" ring finally follows your 0–100 vs WHOOP 0–21 scale (with a decimal on the 21 scale).",
                 "**The \"workout in progress\" card is back on Home.** The Liquid redesign dropped it; an active manual workout is once again visible on the Home screen and taps straight through to Live.",
                 "**Apple Health steps count again.** Steps imported from an Apple Health export now reach your daily totals instead of quietly going missing.",
                 "**Steadier battery alerts and fresher widgets.** The low-battery alert no longer re-fires while you're charging, and the home-screen widget shows your current battery instead of a stale value.",
@@ -422,7 +422,7 @@ enum AppChangelog {
                 "**Sharper HRV.** R-R intervals are rounded to match the other paths, and HRV windows need a few clean beats before they count.",
                 "**No more crash loops.** A corrupt local database sets the bad file aside and rebuilds a clean one instead of crashing on every launch.",
                 "**Fresh-install fix.** Your WHOOP shows up in the Devices list on a brand-new install.",
-                "**Readable in light mode.** Charge / Effort / Rest labels stay legible in both themes, and more of the app is translated.",
+                "**Readable in light mode.** Recovery / Strain / Sleep labels stay legible in both themes, and more of the app is translated.",
             ]
         ),
         Release(
@@ -438,7 +438,7 @@ enum AppChangelog {
                 "**The live heart-rate graph reads true.** A steady heart rate no longer draws a slow phantom ramp on the Health screen. Thanks ryanbr.",
                 "**Chart range chips make sense on new accounts.** W, M, 3M, 6M, 1Y and ALL unlock as your history grows instead of drawing identical charts in your first week, and they behave the same on iPhone, Mac and Android. Thanks ryanbr.",
                 "**Editing a sleep can no longer blank the screen.** A late-night edit that rolled the bed time across midnight could hide the whole sleep screen. The editor corrects the obvious case and degrades gracefully instead. Your data was never lost. Thanks sudden-break.",
-                "**And more.** Week in Review is honest about short weeks and respects your Effort scale everywhere (thanks pikapik487), Android can add a device without dropping a live strap, Lab Book imports markers from a CSV including European decimals, and the Apple Watch and design system are localised in step with the phone.",
+                "**And more.** Week in Review is honest about short weeks and respects your Strain scale everywhere (thanks pikapik487), Android can add a device without dropping a live strap, Lab Book imports markers from a CSV including European decimals, and the Apple Watch and design system are localised in step with the phone.",
             ]),
         Release(
             version: "7.8.0",
@@ -449,7 +449,7 @@ enum AppChangelog {
                 "**Pinch to zoom, for real this time.** The Today heart-rate chart's zoom shipped earlier but the gesture could never actually win against the day swipe, so it felt broken. That's fixed properly on iPhone, and Android gets the same pinch and pan. Double-tap resets.",
                 "**Find any screen.** The Mac sidebar has a search field now: type a few letters and every matching section opens.",
                 "**Continuous HRV, overnight only.** A new option runs the live HRV stream just during your quiet hours: the same nightly readings at roughly half the battery cost. Daytime Stress readings get sparser with it on.",
-                "**Charge and Rest stop sticking on an old night.** A strap with a drifting clock could re-bank the same night twice and pin your scores to the stale copy. Duplicates are now caught, cleaned up and re-scored automatically.",
+                "**Recovery and Sleep stop sticking on an old night.** A strap with a drifting clock could re-bank the same night twice and pin your scores to the stale copy. Duplicates are now caught, cleaned up and re-scored automatically.",
                 "**The Buzz Strap shortcut buzzes again.** One-shot buzzes now use the exact sequence the strap is known to answer, delivered as acknowledged writes so a busy connection can't silently drop them.",
                 "**Widgets keep up.** The iPhone widget refreshes during long sessions instead of freezing at the last app open, and the Apple Watch gets fresher snapshots within its update budget.",
                 "**Noor en español, and in Chinese.** On iPhone and Mac, Spanish and Chinese (Simplified and Traditional) are complete, and Italian is refreshed. Community-contributed, with thanks. Android translations are on the roadmap.",
@@ -457,10 +457,10 @@ enum AppChangelog {
             ]),
         Release(
             version: "7.7.1",
-            title: "Bug fixes: Effort, the widget's day, and Oura reconnect",
+            title: "Bug fixes: Strain, the widget's day, and Oura reconnect",
             date: "July 2026",
             items: [
-                "**Effort stops reading zero after you swap straps.** If you re-added your band through the device manager, the Today heart-rate curve and your Effort could come back empty. They now read whichever strap you actually have paired, so your day fills in again.",
+                "**Strain stops reading zero after you swap straps.** If you re-added your band through the device manager, the Today heart-rate curve and your Strain could come back empty. They now read whichever strap you actually have paired, so your day fills in again.",
                 "**The widget shows today, not yesterday.** Around midnight the home-screen widget, watch face, Live Activity and lock-screen notification could hang on the previous day. They all move to the new day on their own now.",
                 "**Your Oura ring reconnects by itself.** After a dropout or an app restart the ring comes back on its own, the same as a WHOOP strap, and it no longer keeps retrying a pairing it cannot finish and draining the battery.",
                 "**A battery estimate that learns faster.** Days remaining now personalises from your own discharge without waiting for a full charge first, which helps on a WHOOP 5.0 that rarely tops up to 100 percent.",
@@ -472,7 +472,7 @@ enum AppChangelog {
             title: "Smoother, an Oura live-HR fix, and a big pile of improvements",
             date: "June 2026",
             items: [
-                "**Smoother, especially on Mac.** The long freeze some of you hit when opening the app or the Insights tab should be gone, and after a sync your Charge and Rest now catch up to your latest night instead of sometimes sticking on an older one.",
+                "**Smoother, especially on Mac.** The long freeze some of you hit when opening the app or the Insights tab should be gone, and after a sync your Recovery and Sleep now catch up to your latest night instead of sometimes sticking on an older one.",
                 "**Oura ring (beta): live heart rate again.** Live heart rate from the ring had stopped coming through, and it streams again now. The file import also accepts more export shapes, and the ring is easier to find when you add a device.",
                 "**See a workout while it is happening.** Today shows a live \"workout in progress\" card you can tap straight through to the live view.",
                 "**Your WHOOP 4.0 data shows sooner.** While the strap is still building your history, the screens show what has banked so far instead of looking empty, and your steps can now show whether you were still, walking or running.",
@@ -493,7 +493,7 @@ enum AppChangelog {
             date: "June 2026",
             items: [
                 "**Faster, with a lot of fixes.** The lag after importing Apple Health data is gone, Today opens on today again after an update (not your first ever day), the active-workout stats no longer get cut off, and the alarm page reads correctly.",
-                "**Your imports go further.** Workouts now come in from Apple Health, Health Connect days that arrived as an import now earn their own Charge and Rest, the Oura file import accepts more export shapes, and Back up to a folder works on iPhone.",
+                "**Your imports go further.** Workouts now come in from Apple Health, Health Connect days that arrived as an import now earn their own Recovery and Sleep, the Oura file import accepts more export shapes, and Back up to a folder works on iPhone.",
                 "**Now in Spanish and Italian.** Two more full translations, with more to come.",
                 "**Sleep, navigation and devices.** A single night is no longer split into a separate nap, the More tab remembers which sections you left open, the Insights questions roll over to each new day, and your strap firmware version now shows on the Devices screen.",
             ]),
@@ -502,7 +502,7 @@ enum AppChangelog {
             title: "Local Oura ring support: use your Oura ring with no Oura app (beta)",
             date: "June 2026",
             items: [
-                "**Local Oura ring support (beta).** Noor can now read an Oura ring directly over Bluetooth, fully on-device, so you can use the ring with no Oura app, no account and no cloud. It reads heart rate, HRV, SpO2, skin temperature and sleep stages off the ring and runs Noor's own Charge and Rest scoring, not Oura's. Works on Oura Ring 3, 4 and 5, with per-generation capabilities.",
+                "**Local Oura ring support (beta).** Noor can now read an Oura ring directly over Bluetooth, fully on-device, so you can use the ring with no Oura app, no account and no cloud. It reads heart rate, HRV, SpO2, skin temperature and sleep stages off the ring and runs Noor's own Recovery and Sleep scoring, not Oura's. Works on Oura Ring 3, 4 and 5, with per-generation capabilities.",
                 "**How setup works.** Pairing factory-resets the ring and adopts it locally, which is recoverable: if Noor cannot take it over, you just re-pair it in the Oura app. This is early beta and may not work on every ring yet, so there is also an Advanced bring-your-own-key path and a file-import fallback.",
             ]),
         Release(
@@ -517,11 +517,11 @@ enum AppChangelog {
             ]),
         Release(
             version: "7.4.0",
-            title: "A calmer Today, your Charge explained, and new HRV science under the hood",
+            title: "A calmer Today, your Recovery explained, and new HRV science under the hood",
             date: "June 2026",
             items: [
                 "**A simpler Today.** The dashboard had got busy, so we calmed it down: one clean read at the top, the daily synthesis folds into a single line you can expand, and the metric cards line up evenly. Less noise, the same depth when you want it.",
-                "**See exactly what shaped your Charge.** Tap your Charge to see which signals moved it and by how much (HRV, resting heart rate, sleep, respiration, skin temperature), each with a plain-English note. A new \"How Charge is calculated\" link explains the method itself, so the score is never a black box.",
+                "**See exactly what shaped your Recovery.** Tap your Recovery to see which signals moved it and by how much (HRV, resting heart rate, sleep, respiration, skin temperature), each with a plain-English note. A new \"How Recovery is calculated\" link explains the method itself, so the score is never a black box.",
                 "**New on-device measures from your heart-rate rhythm.** The Stress screen now also shows frequency-domain HRV (your LF/HF autonomic balance) and a Baevsky stress index, both computed locally from the day's beat-to-beat data. They sit alongside the existing stress read, they do not replace it.",
                 "**A sharper illness heads-up.** When the early-warning signal fires, it now carries a confidence read based on how far your vitals have moved together. The alert itself is unchanged, this just tells you how strong the signal is.",
                 "**Test Centre is one tap away.** The diagnostics and bug-report hub moved out of Settings and into the More tab (and the Mac sidebar), so reporting something takes seconds.",
@@ -555,7 +555,7 @@ enum AppChangelog {
             title: "The Test Centre: help us fix YOUR specific problem",
             date: "June 2026",
             items: [
-                "**New: a Test Centre in Settings (iPhone, Mac and Android).** Every diagnostic and logging control now lives in one place, and you can opt into a test mode for the exact thing that is not working: Sleep, Battery, your scores (Charge and HRV), Connection and sync, Workouts, Steps, Imports, or the app's smoothness. Turn the mode on, use Noor as normal, then export a clean report and attach it to a GitHub issue with one tap. Instead of guessing from \"it's broken\", we get the exact reason it broke, so the fix lands faster.",
+                "**New: a Test Centre in Settings (iPhone, Mac and Android).** Every diagnostic and logging control now lives in one place, and you can opt into a test mode for the exact thing that is not working: Sleep, Battery, your scores (Recovery and HRV), Connection and sync, Workouts, Steps, Imports, or the app's smoothness. Turn the mode on, use Noor as normal, then export a clean report and attach it to a GitHub issue with one tap. Instead of guessing from \"it's broken\", we get the exact reason it broke, so the fix lands faster.",
                 "**Your data stays yours.** Every test mode runs on your device, the exported report is redacted and you review it before you share it, and nothing ever uploads on its own. This is how an early community test app should work: you pick the issue you care about, and your report drives the fix.",
             ]),
         Release(
@@ -590,7 +590,7 @@ enum AppChangelog {
             title: "New: use an Apple Watch with Noor",
             date: "June 2026",
             items: [
-                "**Noor now works with your Apple Watch, no WHOOP needed.** Strap on the watch you already own and Noor turns it into a recovery-and-strain tracker. Your Charge, Effort and Rest rings and live heart rate show right on your wrist, with a watch-face complication so your Charge is one glance away. Your phone stays the brain: it reads the watch's own health data and works out recovery from it, all offline, and a score it hasn't earned yet shows a dash rather than a fake number.",
+                "**Noor now works with your Apple Watch, no WHOOP needed.** Strap on the watch you already own and Noor turns it into a recovery-and-strain tracker. Your Recovery, Strain and Sleep rings and live heart rate show right on your wrist, with a watch-face complication so your Recovery is one glance away. Your phone stays the brain: it reads the watch's own health data and works out recovery from it, all offline, and a score it hasn't earned yet shows a dash rather than a fake number.",
                 "**It's iPhone only and brand new.** There's no Mac or Android twin, and it's early, so expect some rough edges and tell us what you find. For now the watch app installs by building from source in Xcode, so it's signed properly onto your own watch.",
             ]),
         Release(
@@ -601,7 +601,7 @@ enum AppChangelog {
                 "**New: \"~X days left\" on your strap battery.** Noor watches how fast the band is discharging and tells you roughly how many days are left, right on the Today battery badge. All on-device, nothing logged.",
                 "**New: browse previous weeks in Trends.** Flick back through your Weekly Trends history week by week, instead of only seeing the current one.",
                 "**New: breathing cues.** An optional audio pacer for the breathing exercise, with a ring that breathes along with you. It stays quiet when your phone is on silent.",
-                "**A stack of connection and sleep fixes.** Straps that said \"connected\" but sent no data now connect properly, sleep on the WHOOP 5 and MG no longer over-counts time awake, the Sleep tab shows the right bedtime (and editing it actually moves it), and Trends \"Rest\" matches the number on Today.",
+                "**A stack of connection and sleep fixes.** Straps that said \"connected\" but sent no data now connect properly, sleep on the WHOOP 5 and MG no longer over-counts time awake, the Sleep tab shows the right bedtime (and editing it actually moves it), and Trends \"Sleep\" matches the number on Today.",
                 "**Plus the everyday polish.** Android home-screen cards open their detail when tapped, Today stops jumping back to the strap's start date, workouts gain Treadmill walk and Bodybuilding presets and an optional keep-screen-on, and the German, Spanish, Russian and Brazilian Portuguese translations all show up properly now. Thanks ryanbr, sunny-noop, Te1man, Divad27, artur01, oregontrailbison and everyone who reported these.",
             ]),
         Release(
@@ -619,7 +619,7 @@ enum AppChangelog {
                 "**Scrolling is much smoother on every screen.** We went screen by screen: charts and rings now cache their drawing instead of redrawing every frame, long screens only build what's actually on screen, and the home screen no longer redraws itself on every heartbeat. iPhone, iPad, Mac and Android all get it.",
                 "**The analytics stopped thrashing your phone's memory.** The sleep and scoring engines were re-crunching the same nights over and over. Now each night is worked out once and reused, so the app stays quieter and faster while it scores.",
                 "**Fixed: a Sleep V2 crash.** With the experimental sleep staging turned on, the app could get choppy and then crash on Android while scrolling back through nights, because it never trimmed each night's data down and redid the same heavy maths a million times over. Now each night is trimmed first and the maths runs in a single pass, so it stays put. Your sleep numbers come out exactly the same. Thanks to the two of you who sent the logs that pinned it (#707).",
-                "**Also fixed:** the day no longer jumps when you come back to the app, the Rest graph matches the Rest score, and there's a new toggle in Settings to turn the moving day-cycle sky off if you prefer it plain. (#614, #698)",
+                "**Also fixed:** the day no longer jumps when you come back to the app, the Sleep graph matches the Sleep score, and there's a new toggle in Settings to turn the moving day-cycle sky off if you prefer it plain. (#614, #698)",
             ]),
         Release(
             version: "7.0.1",
@@ -673,7 +673,7 @@ enum AppChangelog {
                 "**Storage, cleaned up.** Fixed an iPhone bug where importing an Apple Health export could quietly balloon the app's storage by leaving a duplicate behind, and added a Storage screen so you can see what's using space and clear it safely. Thanks @exzanimo (#590).",
                 "**Clearer steps, alarms and Mac.** Steps now tells you exactly how many more days it needs to calibrate (and shows your imported phone steps directly), the Mac explains that R22 deep data needs an iPhone or Android, and inactivity nudges and your smart alarm can now also reach you as a phone notification. Thanks @bringiton321, @hkuehl, @artur01-code (#589, #587, #577).",
                 "**Tighter sleep dates.** A WHOOP with a wandering clock could re-send records stamped with wrong dates and scramble which night was which. Noor now checks each record against the strap's own data range and drops the impossible ones (#547).",
-                "**Android polish + a share card.** No more black band under the camera notch (thanks @cooki371, @Divad27), profile photos import the right way up, Fitbit imports are faster, and the strap scan backs off to save battery during reconnects (thanks @ryanbr). Plus a new share card overlaying your Charge, Effort and Rest on a photo (#559).",
+                "**Android polish + a share card.** No more black band under the camera notch (thanks @cooki371, @Divad27), profile photos import the right way up, Fitbit imports are faster, and the strap scan backs off to save battery during reconnects (thanks @ryanbr). Plus a new share card overlaying your Recovery, Strain and Sleep on a photo (#559).",
                 "**Spot HRV won't fake it.** An on-demand HRV reading now refuses to give a number when too much of the capture was noise, instead of showing you a shaky one. Thanks @ryanbr (#585).",
             ]),
         Release(
@@ -691,7 +691,7 @@ enum AppChangelog {
                 "**Sleep got smarter and more honest.** A night split by a wake-up is now counted in full instead of just one fragment. A bad-clock strap can no longer pass off a 12-hour block as one night. A still morning right after you wake is no longer mistaken for a second sleep. And when the deep/REM split can't be trusted on a quiet night, Noor says so instead of guessing. Your own hand-edits to a night also win over an imported value now.",
                 "**Naps, spotted on your device.** Opt in and Noor notices a likely nap from your motion and offers it for a one-tap add. Nothing is logged automatically, and it never touches your real sleep scores. Thanks @cbarrado.",
                 "**WHOOP 4.0 sleep on older firmware.** Straps on an older offload layout that used to bank nothing now hand over the motion Noor needs to stage sleep. Thanks airtonzanon for the captures.",
-                "**More at a glance.** A new 2x2 Android home-screen widget shows Charge, Effort and Rest together, plus optional morning-recap and post-workout notifications, both off by default and no AI involved.",
+                "**More at a glance.** A new 2x2 Android home-screen widget shows Recovery, Strain and Sleep together, plus optional morning-recap and post-workout notifications, both off by default and no AI involved.",
                 "**Caffeine cutoff and per-day alarms.** Set a \"no caffeine after\" time with a gentle late-intake nudge (thanks @mvanhorn), and set different smart-alarm wake times per weekday (thanks @MumiZed).",
                 "**WHOOP 4.0 gets more.** Broadcast your heart rate out from a 4.0, not just a 5.0; a clearer steps calibration; and honest \"what your strap can and can't read\" copy instead of bare dashes. On Android, removing a device now properly releases the Bluetooth link so the band can re-pair.",
                 "**Polish and fixes.** Fixed the iPhone score-ring overlap, a battery-friendly skip of the idle background re-score (thanks @ryanbr), last-synced time that survives a restart (thanks @tavelli), a charging bolt on the Live screen, a Linux raw-capture import, and German is now fully translated.",
@@ -709,7 +709,7 @@ enum AppChangelog {
             date: "June 2026",
             items: [
                 "**Your night is your night.** We rebuilt how Noor decides which sleep is your main one. It now scores every sleep block on how much you actually slept and how close it was to your usual hours (which Noor learns from your own history), so a long sleep that started at an odd time is no longer filed away as a nap, and the Sleep tab and your recovery scores always land on the same night. This was a from-scratch rework, not a patch, grounded in real strap logs and the sleep-staging research.",
-                "**The app explains itself now.** Tap the info on a sleep block to see exactly why it's your main sleep or a nap. Your Charge, Effort and Rest tiles tell you when they're still calibrating (and how many nights are left), when they're showing last night's number, or when they simply need the strap, instead of a bare dash. A Recording chip shows when the strap is actually connected and saving data. And a small badge on each number shows whether Noor worked it out on your device or imported it from WHOOP or Apple Health.",
+                "**The app explains itself now.** Tap the info on a sleep block to see exactly why it's your main sleep or a nap. Your Recovery, Strain and Sleep tiles tell you when they're still calibrating (and how many nights are left), when they're showing last night's number, or when they simply need the strap, instead of a bare dash. A Recording chip shows when the strap is actually connected and saving data. And a small badge on each number shows whether Noor worked it out on your device or imported it from WHOOP or Apple Health.",
                 "**New: a \"How Noor works\" page.** Tucked in Settings, a short plain-English read on how your sleep is sorted, how your scores build over your first couple of weeks, what \"recording\" means, and where your numbers come from.",
                 "**Help us get your sleep exactly right.** If your sleep still looks off after this, please open an issue on GitHub with a strap log and the dates it's wrong. That is the single fastest way for us to pin your case. There's a full write-up of the research behind this rework if you want the detail.",
             ]),
@@ -723,24 +723,24 @@ enum AppChangelog {
                 "**Broadcast your heart rate out.** Turn on Broadcast in Data Sources and Noor re-shares your strap's heart rate as a standard Bluetooth HR sensor, so a treadmill, Zwift or Peloton can read it. Local Bluetooth only, nothing leaves your device. Off by default.",
                 "**Experimental: more bands, and we need your help testing them.** A clearly-labeled Experimental tier in Add a device covers Amazfit / Zepp (Helio included), Xiaomi Mi Band, Garmin (via Broadcast HR) and an Oura ring probe. These are best-effort and can't be hardware-verified by us, so they're opt-in and honest about what they can do. None of them ever makes up a number. If you have one, turn it on and send us a debug log.",
                 "**GPS workout routes on iPhone and Mac.** Outdoor runs, rides, walks and hikes now record a route with distance, pace and a map, matching Android. Recording keeps going while the screen is off.",
-                "**Take a spot HRV reading any time**, plus a new **Recalibrate baselines** button in Settings to cleanly restart your Charge build-up if your first week got thrown off. Your history stays. And a simple **caffeine log** with a rough still-active estimate.",
+                "**Take a spot HRV reading any time**, plus a new **Recalibrate baselines** button in Settings to cleanly restart your Recovery build-up if your first week got thrown off. Your history stays. And a simple **caffeine log** with a rough still-active estimate.",
                 "**Fixes you asked for.** Sleep totals now line up across every screen (your night is your night, naps sit on their own). A fresh or calibrating tile says \"building, wear it tonight\" instead of a bare dash. Manual workouts survive the app being killed mid-session. The WHOOP 4.0 scheduled alarm actually buzzes now (our packet was two bytes short), with per-weekday scheduling. Android can share metrics out to Health Connect.",
                 "Huge thanks to everyone who reverse-engineered, reported and tested their way into this one. A pile of 6.0 came straight from your issues and PRs.",
             ]),
         Release(
             version: "5.3.0",
-            title: "Sleep, Charge and workouts, cleaned up",
+            title: "Sleep, Recovery and workouts, cleaned up",
             date: "June 2026",
             items: [
-                "**Your Sleep tab shows your actual night now**, not an afternoon nap that happened to end later. Days with a nap get a clear Main / Nap(s) / Total split so you can see what made up your Rest. (#518)",
-                "**Rest is more honest about deep sleep.** A night with normal REM but barely any deep used to still score in the 90s. It now reflects a low-deep night properly, without inventing stages we can't actually measure.",
-                "**Charge settles in days, not weeks.** Your recovery baseline used to take 2 to 3 weeks to learn, and one high early reading could hold Charge down the whole time. It finds your real baseline fast now. And there's a new **Recalibrate Charge baseline** button under **Settings → Recovery** if you ever want to reset it and re-learn from tonight. Your data isn't deleted.",
+                "**Your Sleep tab shows your actual night now**, not an afternoon nap that happened to end later. Days with a nap get a clear Main / Nap(s) / Total split so you can see what made up your Sleep. (#518)",
+                "**Sleep is more honest about deep sleep.** A night with normal REM but barely any deep used to still score in the 90s. It now reflects a low-deep night properly, without inventing stages we can't actually measure.",
+                "**Recovery settles in days, not weeks.** Your recovery baseline used to take 2 to 3 weeks to learn, and one high early reading could hold Recovery down the whole time. It finds your real baseline fast now. And there's a new **Recalibrate Recovery baseline** button under **Settings → Recovery** if you ever want to reset it and re-learn from tonight. Your data isn't deleted.",
                 "**No more \"New data added\" spam.** The Updates inbox used to repeat that every time Noor re-scored your recent days in the background, even on an old import with nothing new. Now it tells you once, only when a genuinely newer day lands. (#521)",
                 "**A real sport picker on workouts.** Add, edit or start a session and pick from a named list (Padel included), with free text still there for anything that isn't on it. (#519)",
                 "**New: a daily auto-export of your strap log (iPhone & Mac).** Turn it on under **Settings → Diagnostics**, pick a time, and Noor saves a timestamped copy once a day, so a log is waiting for a bug report without you remembering to grab it. Off by default, stays on your device. On Mac it runs while Noor is open; on iPhone it fires when iOS next wakes the app near your time, not to the exact minute. Android already had this. (#510)",
                 "**Android: double-tap your strap to do something.** Pick from Nothing, Buzz back, Mark a moment, Log a sleep mark, or Buzz the time, with a Test button. Same as iPhone and Mac now.",
                 "**Android: clearer help when a WHOOP 5/MG won't pair.** Instead of looping silently it now shows the steps to fix it (close the official WHOOP app, hold the band until the lights flash blue, Forget This Device). (#78)",
-                "Plus the home-screen widgets and the iOS Live Activity say Charge instead of Recovery now, workout durations stop clipping on the Today tiles (Android, #332), and updating through AltStore no longer fails partway.",
+                "Plus the home-screen widgets and the iOS Live Activity say Recovery instead of Recovery now, workout durations stop clipping on the Today tiles (Android, #332), and updating through AltStore no longer fails partway.",
             ]),
         Release(
             version: "5.2.6",
@@ -785,7 +785,7 @@ enum AppChangelog {
             title: "Delete a sleep, swipe to mark read",
             date: "June 2026",
             items: [
-                "**iPhone: you can now delete a sleep or nap.** Open a night's **Edit sleep times** and tap **Delete this sleep** - it's removed, your day's Rest and recovery recompute without it, and it won't come back on the next sync. (Matches Android.) (#68)",
+                "**iPhone: you can now delete a sleep or nap.** Open a night's **Edit sleep times** and tap **Delete this sleep** - it's removed, your day's Sleep and recovery recompute without it, and it won't come back on the next sync. (Matches Android.) (#68)",
                 "**Android: swipe an Updates card to mark it read.** Swipe any unread card in your Updates inbox and it slides into *Earlier* - same as tapping it. Thanks to a community contributor for the idea. (#65)",
             ]),
         Release(
@@ -829,7 +829,7 @@ enum AppChangelog {
                 "**Fixed: some panels rendered with overlapping text on Mac.** A few of the new v5 screens - the Lab Book \"Add a reading\" sheet, Breathe, a workout's detail, the Trends report and the \"Your Data, Fused\" compare - could open with their title, fields and lists stacked on top of each other. They now lay out as clean, scrollable forms.",
                 "**Fixed: the Lab Book marker picker now scrolls to every marker.** It was only showing the first handful and hiding the rest - all of them are reachable now.",
                 "**Polish:** Breathe's pace buttons no longer get cut off on a narrow phone, the Insights toggles stop crowding their headers, and the Rhythm \"extra/skipped\" figure is shown in a calm tone (it's a picture, never an alarm).",
-                "**Android parity:** the Breathe screen now offers your locked Resonance pace and uses the calm Rest colours, and the Health screen gained quick links to Lab Book and Your Data, Fused.",
+                "**Android parity:** the Breathe screen now offers your locked Resonance pace and uses the calm Sleep colours, and the Health screen gained quick links to Lab Book and Your Data, Fused.",
             ]),
         Release(
             version: "5.0.0",
@@ -838,7 +838,7 @@ enum AppChangelog {
             items: [
                 "**The big idea.** Everyone else shows you a score their cloud computed, behind a subscription. Noor reads your strap's raw signals - beat-to-beat timing, red/IR PPG, motion, skin temperature - and does all the maths on your own device, free and offline. And it's the only one that can actually breathe you back down. Seven new things below, plus a tidier home: everything now lives under five places - **Today · What Moves You · Health · Devices & Sources · Settings**.",
                 "**Haptic biofeedback - the strap that breathes you down.** Your wrist motor can now pace your breathing with the screen off. Find your personal calm pace (open **Breathe → Resonance → Find your resonance pace**, pick the ~13-min or ~7-min sweep), then breathe to the buzz. Mid-stress, tap **Calm me · 3 min** for a felt metronome just below your heart rate. Optional passive check-ins: **Settings → Automations → Stress check-ins (haptic)** (off by default).",
-                "**What Moves You.** A ranked, lag-aware read of what actually moves *your* recovery - from your own journal and outcomes, not population averages. Log alcohol or late caffeine with an amount and Noor fits a personal dose-response curve, then in the evening tells you what one more drink tends to cost tomorrow's Charge. Open **What Moves You** (the wand in the sidebar / Insights).",
+                "**What Moves You.** A ranked, lag-aware read of what actually moves *your* recovery - from your own journal and outcomes, not population averages. Log alcohol or late caffeine with an amount and Noor fits a personal dose-response curve, then in the evening tells you what one more drink tends to cost tomorrow's Recovery. Open **What Moves You** (the wand in the sidebar / Insights).",
                 "**Skin-temperature suite.** Three features off the one signal WHOOP already streams: cycle-phase **awareness** (opt-in, on-device, never contraception or a fertility predictor), a **Body clock** jet-lag/shift helper, and a smarter illness **Heads-up** that cross-checks your journal so a night out doesn't cry wolf. Find them in **Health → Skin temperature**; turn cycle awareness on there, illness watch under **Settings → Automations**.",
                 "**Your Data, Fused.** If you wear more than one band, Noor now shows one honest record - best source wins per metric, with the source named on every number and conflicts flagged, never silently averaged. Open **Your Data, Fused** from **Health** or Data Sources. A single WHOOP just shows a clean plain record.",
                 "**Lab Book - your own private logbook.** Type in your bloods, blood pressure, scan values or doctor's-visit notes (or import a CSV), see each marker's trend, and line a marker up against a wearable signal with **Compare with a signal**. It's a notebook, not a medical service - Noor stores and lines up the numbers *you* enter, never tests, reads or diagnoses them, and it all stays on your device. Open **Health → Lab Book**.",
@@ -892,7 +892,7 @@ enum AppChangelog {
             title: "A bolder Today screen",
             date: "June 2026",
             items: [
-                "**The Today scores got a glow-up.** Charge, Effort and Rest now ride on crisp, full-circle gauges that sweep in and count up - a cleaner, bolder at-a-glance read on iPhone and Android. (Thanks to @unruffled688 for the iOS redesign - #23.)",
+                "**The Today scores got a glow-up.** Recovery, Strain and Sleep now ride on crisp, full-circle gauges that sweep in and count up - a cleaner, bolder at-a-glance read on iPhone and Android. (Thanks to @unruffled688 for the iOS redesign - #23.)",
                 "Fixed: the **Releases** links in the project README and docs pointed at a path that returned a 404 on the new home - they now go straight to the downloads page. (#26)",
             ]),
         Release(
@@ -913,10 +913,10 @@ enum AppChangelog {
             ]),
         Release(
             version: "4.5.5",
-            title: "Today's Effort no longer drops to zero",
+            title: "Today's Strain no longer drops to zero",
             date: "June 2026",
             items: [
-                "**Fixed: the Effort number on Today could briefly show the right value, then fall to 0.** The live \"so far today\" Effort recalculation could under-read - especially on a WHOOP 5/MG with sparser heart rate, or after you'd logged a workout - and replace the real Effort you'd already earned. The gauge now never shows **less** than today's earned Effort. (#489 / #506)",
+                "**Fixed: the Strain number on Today could briefly show the right value, then fall to 0.** The live \"so far today\" Strain recalculation could under-read - especially on a WHOOP 5/MG with sparser heart rate, or after you'd logged a workout - and replace the real Strain you'd already earned. The gauge now never shows **less** than today's earned Strain. (#489 / #506)",
                 "**The strap log is now in Settings on iPhone too** (Settings → Strap → Copy / Save), matching Mac - so it's easy to grab for a bug report without hunting on the Live screen. (#509)",
             ]),
         Release(
@@ -971,7 +971,7 @@ enum AppChangelog {
             title: "Light theme tuning",
             date: "June 2026",
             items: [
-                "**Light got dialled in.** Based on early feedback it was leaning too gold, so the chrome - links, the selected range pill, header accents - now uses the deep brand **blue** on Light, with **gold kept for what it means** (the Charge/recovery rings and the action button). Cards now sit on a slightly **deeper warm canvas with a stronger shadow**, so they stand out more. And on **Mac**, a sidebar glitch where the Noor lockup overlapped the navigation list is fixed. Dark is untouched.",
+                "**Light got dialled in.** Based on early feedback it was leaning too gold, so the chrome - links, the selected range pill, header accents - now uses the deep brand **blue** on Light, with **gold kept for what it means** (the Recovery/recovery rings and the action button). Cards now sit on a slightly **deeper warm canvas with a stronger shadow**, so they stand out more. And on **Mac**, a sidebar glitch where the Noor lockup overlapped the navigation list is fixed. Dark is untouched.",
             ]),
         Release(
             version: "4.3.1",
@@ -989,10 +989,10 @@ enum AppChangelog {
             ]),
         Release(
             version: "4.2.13",
-            title: "Effort explains a calm-day zero - and scores on the 5.0/MG",
+            title: "Strain explains a calm-day zero - and scores on the 5.0/MG",
             date: "June 2026",
             items: [
-                "**Effort now explains a calm-day zero instead of just showing \"0.0\".** Effort is *cardiovascular* load - it only builds while your heart rate is up in your effort zone (roughly the top half of your heart-rate reserve, often ~120 bpm and above). On a genuinely easy day your heart rate never gets there, so the honest answer really is near zero - the same way a WHOOP low-strain day reads low. The number was right, but a bare \"0.0\" looked broken, so Today now adds a short line explaining it. We also fixed the WHOOP 5.0/MG case where Effort could sit un-scored for hours: the 5.0/MG sends live heart rate far less often than a 4.0, and the gauge needed a fixed *number* of readings before it would score - now it scores once it has enough *time* of heart-rate coverage, so a steady 5.0/MG stream counts and the gauge stops falling back to a stale value. Effort still only rewards real exertion - nothing is invented. Thanks @darylbleach and @phsycology (#482, #480).",
+                "**Strain now explains a calm-day zero instead of just showing \"0.0\".** Strain is *cardiovascular* load - it only builds while your heart rate is up in your effort zone (roughly the top half of your heart-rate reserve, often ~120 bpm and above). On a genuinely easy day your heart rate never gets there, so the honest answer really is near zero - the same way a WHOOP low-strain day reads low. The number was right, but a bare \"0.0\" looked broken, so Today now adds a short line explaining it. We also fixed the WHOOP 5.0/MG case where Strain could sit un-scored for hours: the 5.0/MG sends live heart rate far less often than a 4.0, and the gauge needed a fixed *number* of readings before it would score - now it scores once it has enough *time* of heart-rate coverage, so a steady 5.0/MG stream counts and the gauge stops falling back to a stale value. Strain still only rewards real exertion - nothing is invented. Thanks @darylbleach and @phsycology (#482, #480).",
                 "**History from a long-drained strap lands on the right day again.** When a WHOOP's internal clock had fully reset - it sat uncharged so long its clock fell back to around 1970 - syncing its stored history could date every night decades into the future, silently wiping sleep and recovery from your timeline. Noor now keeps the real timestamps in that case. Thanks @cataboysbusiness-debug (#471).",
             ]),
         Release(
@@ -1070,8 +1070,8 @@ enum AppChangelog {
             title: "Open a workout, see what it costs you, and share your trends",
             date: "June 2026",
             items: [
-                "**Tap a workout to open it in full.** Every session now has a detail view - its heart-rate curve over the workout, time in each HR zone, duration, avg/max HR, and the Effort it added - so you can actually look back at a session, not just see it in a list. Thanks @andreasc1 (#410).",
-                "**Activity Cost: learn what each activity actually costs your recovery.** A new Insights section correlates your tagged activities with the next morning's Charge - \"sessions like this usually cost you about N points and take about D days to bounce back\" - measured against your own untouched rest-day baseline, with a confidence level so it only speaks up once it's seen enough. Thanks @subscriptiondestroyer (#439).",
+                "**Tap a workout to open it in full.** Every session now has a detail view - its heart-rate curve over the workout, time in each HR zone, duration, avg/max HR, and the Strain it added - so you can actually look back at a session, not just see it in a list. Thanks @andreasc1 (#410).",
+                "**Activity Cost: learn what each activity actually costs your recovery.** A new Insights section correlates your tagged activities with the next morning's Recovery - \"sessions like this usually cost you about N points and take about D days to bounce back\" - measured against your own untouched rest-day baseline, with a confidence level so it only speaks up once it's seen enough. Thanks @subscriptiondestroyer (#439).",
                 "**Shareable trends report.** Export a clean one-page PDF of your recovery, sleep, HRV, resting HR and strain over a range you choose (30 days to all-time) - for a doctor, a coach, or your own records. Entirely on-device, shared through the system share sheet. Thanks @subscriptiondestroyer (#436).",
                 "**Last night syncs sooner.** When a deep backlog is still draining, Noor now keeps the sync going while you're connected instead of stopping and waiting 15 minutes between bursts - so recent nights arrive in far fewer sessions. There's also a **Sync now** button to kick a backfill on demand. Thanks @idkwargwanbear (#364).",
                 "**Weight from Health Connect now shows in Compare** (Android) - a Health-Connect-only weight history was invisible there before. (#443)",
@@ -1120,10 +1120,10 @@ enum AppChangelog {
             ]),
         Release(
             version: "4.0.1",
-            title: "Today's Effort goes live - plus sleep & alarm honesty",
+            title: "Today's Strain goes live - plus sleep & alarm honesty",
             date: "June 2026",
             items: [
-                "**Today's Effort now updates live through the day.** The Effort ring recomputes over today's heart rate as it happens (midnight → now), instead of showing yesterday's completed-day value - or a stale 0.0 early in the morning - until the next full re-score. Thanks @rad182 (#402).",
+                "**Today's Strain now updates live through the day.** The Strain ring recomputes over today's heart rate as it happens (midnight → now), instead of showing yesterday's completed-day value - or a stale 0.0 early in the morning - until the next full re-score. Thanks @rad182 (#402).",
                 "**Editing a sleep time can't scramble the night any more.** The wake picker now keeps the night on its own day, so correcting a bed/wake time re-derives that night's stages cleanly instead of splitting the corrected block and its totals across two days. Resting-HR + HRV day-bucketing was also aligned across Mac, iPhone and Android. Thanks @ujix (#406).",
                 "**Late nights and long lie-ins are captured** - the sleep-detection window was widened so a wake after noon isn't cut short. Thanks @ujix (#425).",
                 "**Smart alarm is now honestly flagged experimental.** The strap acknowledges the alarm, but a strap-driven wake hasn't been verified firing yet - on WHOOP 4.0 *or* 5/MG - so the app now asks you to keep a backup alarm while we confirm the exact firmware buzz pattern. Thanks Kaliarti (#428).",
@@ -1176,7 +1176,7 @@ enum AppChangelog {
             title: "Tidier Today gauges",
             date: "June 2026",
             items: [
-                "**iPhone/Mac:** the three **Charge / Effort / Rest** rings on Today no longer render squished, with their state word (LOW / MODERATE / PEAK) overlapping the arc, on larger iPhones. Each ring now sizes to its card and the labels scale to fit (still full-size on the big single-score rings, and still scaling with your accessibility text size). Thanks @claypilat (#403).",
+                "**iPhone/Mac:** the three **Recovery / Strain / Sleep** rings on Today no longer render squished, with their state word (LOW / MODERATE / PEAK) overlapping the arc, on larger iPhones. Each ring now sizes to its card and the labels scale to fit (still full-size on the big single-score rings, and still scaling with your accessibility text size). Thanks @claypilat (#403).",
                 "**Under the hood:** groundwork for connecting more than one device - no change to your current setup.",
             ]),
         Release(
@@ -1210,7 +1210,7 @@ enum AppChangelog {
             title: "Tidier Today hero, strap renaming, smarter journal",
             date: "June 2026",
             items: [
-                "**Today:** your three daily scores - **Charge / Effort / Rest** - now sit in one tidy row of rings, instead of leaving Rest stranded on its own line beside an empty space. Thanks @vulnix0x4 (#394).",
+                "**Today:** your three daily scores - **Recovery / Strain / Sleep** - now sit in one tidy row of rings, instead of leaving Sleep stranded on its own line beside an empty space. Thanks @vulnix0x4 (#394).",
                 "**WHOOP 4.0 - rename your strap (iPhone/Mac):** picked up a second-hand band stuck on the previous owner's name? You can now rename its Bluetooth advertising name under **Settings → Strap** while it's connected. The strap reboots to apply, and it's reversible any time. Thanks @rad182 (#393).",
                 "**Android journal:** opening today's journal now **pre-fills last night's answers** (one tap to confirm or change - recurring habits like \"read before bed\" no longer need re-entering), with bigger Yes/No tap targets. Thanks @ujix (#372).",
             ]),
@@ -1245,7 +1245,7 @@ enum AppChangelog {
                 "Bluetooth & live HR: WHOOP 5/MG keeps decoding correctly after iOS relaunches Noor in the background, and the Lock-Screen / Dynamic-Island live heart rate now ends when the strap disconnects instead of freezing on a stale number. Thanks @vulnix0x4 (#378, #386).",
                 "Your data is safer: a failed import now keeps your existing data instead of risking an empty database, and the AI Coach never sends an API key you saved for one provider to a different one. Thanks @vulnix0x4 (#383, #385).",
                 "Accessibility & polish: the breathing orb honours Reduce Motion, the 24-hour heart-rate chart reads out in VoiceOver, text scales with Dynamic Type, the day navigator has bigger tap targets, and Sleep/Stress times follow your device's 12/24-hour and language settings. The Today screen also stays smooth while live heart rate streams. Thanks @vulnix0x4 (#359, #362, #381, #363, #361, #388, #358).",
-                "Android: workout rows are now tappable with a detail sheet, and the sleep-consistency tile no longer reads a false 0% - thanks @ujix (#370, #367). The Rest confidence dot now matches iPhone/Mac (#373). Plus an accurate Mac menu-bar live-feed toggle, and \"What's New\" no longer gets skipped after an update that also refreshes the Terms (#390, #389).",
+                "Android: workout rows are now tappable with a detail sheet, and the sleep-consistency tile no longer reads a false 0% - thanks @ujix (#370, #367). The Sleep confidence dot now matches iPhone/Mac (#373). Plus an accurate Mac menu-bar live-feed toggle, and \"What's New\" no longer gets skipped after an update that also refreshes the Terms (#390, #389).",
             ]),
         Release(
             version: "3.0.3",
@@ -1267,7 +1267,7 @@ enum AppChangelog {
             title: "Cleaner score rings + a few fixes",
             date: "June 2026",
             items: [
-                "Changed: removed the small gold dot in the centre of the Charge / Recovery rings, behind the number - at the v3 launch a few of you (rightly) said it crowded the read-out. The clean ring + number + micro-Noor wordmark stay; the dot now lives only in the standalone logo.",
+                "Changed: removed the small gold dot in the centre of the Recovery / Recovery rings, behind the number - at the v3 launch a few of you (rightly) said it crowded the read-out. The clean ring + number + micro-Noor wordmark stay; the dot now lives only in the standalone logo.",
                 "Fixed: Steps on Today now prefer your strap's own on-device step count (WHOOP 5/MG) over Apple Health, matching Android - so strap-only users see their steps without importing anything. Thanks @netizentryingtofitin (#276).",
                 "Fixed: a real overnight sleep that runs late, or has a brief morning stir then drifts back to sleep, no longer truncates your wake time to late morning (\"woke at noon\"). Your true wake time is kept. Thanks @vulnix0x4 (#353).",
                 "Fixed (Android): the HR-zone coaching toggle now actually persists and buzzes your strap when you cross into your top zone - and again as you recover - closing the gap with Mac/iPhone. It was previously a preview-only stub. Thanks @cbarrado (#350).",
@@ -1287,7 +1287,7 @@ enum AppChangelog {
             title: "Today tiles no longer cut their value to \"10…\" (Android)",
             date: "June 2026",
             items: [
-                "Fixed (Android): on phones, Today tiles that show a sparkline (Charge, Rest, Respiratory, HRV…) were truncating their value to \"10…\" or \"15…\" because the value and the inline trend line were competing for width. The value now shrinks to fit the way it already does on Mac/iPhone, so it always reads in full. Thanks @asemfahad (#332).",
+                "Fixed (Android): on phones, Today tiles that show a sparkline (Recovery, Sleep, Respiratory, HRV…) were truncating their value to \"10…\" or \"15…\" because the value and the inline trend line were competing for width. The value now shrinks to fit the way it already does on Mac/iPhone, so it always reads in full. Thanks @asemfahad (#332).",
             ]),
         Release(
             version: "2.18.4",
@@ -1326,10 +1326,10 @@ enum AppChangelog {
             ]),
         Release(
             version: "2.17.1",
-            title: "Charge shows \"Calibrating\" instead of \"No data\" for new straps",
+            title: "Recovery shows \"Calibrating\" instead of \"No data\" for new straps",
             date: "June 2026",
             items: [
-                "Charge no longer shows a bare \"No data\" while it is still learning your baseline. A brand-new strap now reads \"Calibrating - 0 of 4 nights\" so it is clearly building, not broken - Charge needs a few nights of wear before it can score recovery (Effort and Rest show right away). Thanks @umarXBT (#335).",
+                "Recovery no longer shows a bare \"No data\" while it is still learning your baseline. A brand-new strap now reads \"Calibrating - 0 of 4 nights\" so it is clearly building, not broken - Recovery needs a few nights of wear before it can score recovery (Strain and Sleep show right away). Thanks @umarXBT (#335).",
             ]),
         Release(
             version: "2.17.0",
@@ -1338,14 +1338,14 @@ enum AppChangelog {
             items: [
                 "iPhone: the floating tab bar no longer hides the last card on scrolling screens - there's now room to scroll the final card fully clear. Thanks @vulnix0x4 (#333).",
                 "iPhone: tappable cards now give a subtle press response + a light haptic (before, they only reacted to a mouse pointer), and the manual-workout sheet uses a proper drag-handle + a decimal keypad with a Done button. Thanks @vulnix0x4 (#329, #330).",
-                "Accessibility: charts now read a one-line VoiceOver summary (e.g. \"Charge trend - 35 points, mean 62, range 22 to 91\"), and the gauge draw-in animation respects Reduce Motion. Thanks @vulnix0x4 (#334).",
+                "Accessibility: charts now read a one-line VoiceOver summary (e.g. \"Recovery trend - 35 points, mean 62, range 22 to 91\"), and the gauge draw-in animation respects Reduce Motion. Thanks @vulnix0x4 (#334).",
             ]),
         Release(
             version: "2.16.1",
             title: "Today tiles no longer truncate their value (Android)",
             date: "June 2026",
             items: [
-                "Fixed (Android): some Today tiles cut their value off to \"…\" (Effort, Rest, Respiratory, and the Last Workouts durations) - the value now shrinks to fit the tile instead of truncating, matching the Mac/iPhone behaviour. Thanks @asemfahad (#332).",
+                "Fixed (Android): some Today tiles cut their value off to \"…\" (Strain, Sleep, Respiratory, and the Last Workouts durations) - the value now shrinks to fit the tile instead of truncating, matching the Mac/iPhone behaviour. Thanks @asemfahad (#332).",
             ]),
         Release(
             version: "2.16.0",
@@ -1355,7 +1355,7 @@ enum AppChangelog {
                 "Sleep: a clearer hypnogram - short stages (like Awake) read as bars instead of ticks, Deep is more legible on the dark card, and a time axis marks onset / midpoint / wake. Thanks @vulnix0x4 (#323).",
                 "Live: when no strap is connected, Scan & Connect is now front-and-centre instead of buried, the redundant \"Offline\" badge is gone, and idle tiles read a calm \"Offline\". Thanks @vulnix0x4 (#325).",
                 "Trends: cleaner - the reading-count shows once, footers read naturally (\"Mean 69 ms\"), tiny week-over-week moves read \"<1%\", and peaks no longer clip the top of the chart. Thanks @vulnix0x4 (#326).",
-                "Effort: the Effort gauge and accents now brighten across the full amber ramp (a maxed-out day no longer stays dark ember), and the Week-in-Review Effort gauge honours your 0-100 / 0-21 preference. Thanks @vulnix0x4 (#328).",
+                "Strain: the Strain gauge and accents now brighten across the full amber ramp (a maxed-out day no longer stays dark ember), and the Week-in-Review Strain gauge honours your 0-100 / 0-21 preference. Thanks @vulnix0x4 (#328).",
             ]),
         Release(
             version: "2.15.3",
@@ -1380,13 +1380,13 @@ enum AppChangelog {
             ]),
         Release(
             version: "2.15.0",
-            title: "The new look everywhere - plus sleep, Effort & Bluetooth fixes",
+            title: "The new look everywhere - plus sleep, Strain & Bluetooth fixes",
             date: "June 2026",
             items: [
                 "The new look, everywhere: every screen now wears Noor's premium dark design - scenic backdrops, glowing ring gauges and frosted per-domain cards across Sleep, Recovery, Stress, Workouts, Live, Health, Trends, Insights, Breathe, Coach and Settings, on Mac, iPhone and Android.",
                 "Fixed (sleep day): if you fall asleep before midnight and wake before ~4am in a timezone other than UTC, Today now shows last night's sleep instead of the night before. Thanks @maddognik (#304).",
                 "Fixed (sleep detection): on WHOOP 5.0 a full night is no longer chopped into tiny fragments and dropped - Noor now holds the night together from your heart rate when motion data is sparse. Thanks @umarXBT (#308).",
-                "Fixed (Effort scale): the Effort gauge on Today, Live and Workouts now follows your 0-100 / 0-21 preference instead of always showing 0-21, and older imported days are re-scored onto the 0-100 axis. Thanks @maddognik (#313).",
+                "Fixed (Strain scale): the Strain gauge on Today, Live and Workouts now follows your 0-100 / 0-21 preference instead of always showing 0-21, and older imported days are re-scored onto the 0-100 axis. Thanks @maddognik (#313).",
                 "Fixed (Android Bluetooth): turning Bluetooth off - or flight mode - no longer leaves Noor showing a phantom \"connected\" or crashing on the next buzz; it now cleanly shows disconnected and reconnects when Bluetooth returns. Thanks @pilleuspulcher-blip (#314).",
             ]),
         Release(
@@ -1401,14 +1401,14 @@ enum AppChangelog {
             title: "A beautiful new look",
             date: "June 2026",
             items: [
-                "Noor has a **gorgeous new design** - deeper, calmer, more premium. A dark blue-black canvas, **layered ring gauges** for your Charge, Effort and Rest scores with glowing accents, **frosted tinted cards**, and a refreshed Today. Same data, same on-device privacy - it just looks the way it always should have. More screens get the full treatment over the coming updates.",
+                "Noor has a **gorgeous new design** - deeper, calmer, more premium. A dark blue-black canvas, **layered ring gauges** for your Recovery, Strain and Sleep scores with glowing accents, **frosted tinted cards**, and a refreshed Today. Same data, same on-device privacy - it just looks the way it always should have. More screens get the full treatment over the coming updates.",
             ]),
         Release(
             version: "2.13.0",
             title: "A big iPhone update - and a WHOOP-style Today chart for everyone",
             date: "June 2026",
             items: [
-                "New: a **WHOOP-style Overview chart** on Today - your 24-hour heart rate now carries a sleep band, your Charge at wake, your Effort now, and a glyph at each workout's peak. Thanks @rad182.",
+                "New: a **WHOOP-style Overview chart** on Today - your 24-hour heart rate now carries a sleep band, your Recovery at wake, your Strain now, and a glyph at each workout's peak. Thanks @rad182.",
                 "New: the **Sleep** screen now shows your **asleep and woke times** at a glance. Thanks @vulnix0x4.",
                 "New (iPhone): **two-way Apple Health** you can actually turn on - enable it on the Apple Health screen and your Noor recovery, HRV, resting HR and more flow to Health (now including strap-only users), with the Apple Health screen finally populating. Thanks @vulnix0x4.",
                 "New (iPhone): a proper **accessibility pass** - VoiceOver reads the charts, tiles and controls, **Reduce Motion** is respected throughout, and touch targets meet the 44pt minimum. Thanks @vulnix0x4.",
@@ -1438,9 +1438,9 @@ enum AppChangelog {
                 "New: an evening **wind-down nudge** on every platform - a gentle reminder, timed from your usual wake time and sleep need, that it's time to start winding down. (A sideloaded iPhone/Mac app can't sound a dependable wake alarm, so those get the nudge, not the wake alarm.)",
                 "New: **live workout mode** - a full-screen in-exercise view with big live heart rate, your current HR zone, elapsed time and live effort. Thanks @subscriptiondestroyer (#238).",
                 "New: **editable Key Metrics** - choose which tiles appear on Today and reorder them to taste. Thanks @umarXBT (#251).",
-                "New: an **Effort scale toggle** - show Effort on Noor's 0-100 axis or WHOOP's familiar 0-21 Day-Strain axis, everywhere it appears. Display-only; your stored data is unchanged. Thanks @umarXBT (#268).",
+                "New: an **Strain scale toggle** - show Strain on Noor's 0-100 axis or WHOOP's familiar 0-21 Day-Strain axis, everywhere it appears. Display-only; your stored data is unchanged. Thanks @umarXBT (#268).",
                 "Improved: the **sleep hypnogram is smoother** - brief sub-3-minute stage flecks merge into their neighbours so the graph reads cleanly, biased toward the lighter stage so it never inflates Deep or REM. Thanks @umarXBT (#274).",
-                "New: **import your lifting log** from Hevy (CSV) or Liftosaur (JSON) - each workout lands as a Strength session with an honest training volume-load (weight × reps), kept separate from your heart-rate Effort. On-device, nothing uploaded. Thanks @marceauboul and @maddognik (#272/#232).",
+                "New: **import your lifting log** from Hevy (CSV) or Liftosaur (JSON) - each workout lands as a Strength session with an honest training volume-load (weight × reps), kept separate from your heart-rate Strain. On-device, nothing uploaded. Thanks @marceauboul and @maddognik (#272/#232).",
             ]),
         Release(
             version: "2.10.0",
@@ -1449,7 +1449,7 @@ enum AppChangelog {
             items: [
                 "New: a **sleep-debt ledger** on the Sleep screen - a running 14-night balance of how much sleep you've banked versus your personal need, with a plain-English read and a per-night chart.",
                 "New: a **daytime stress timeline** on the Stress screen, built from the day's heart rate and R-R - with a gentle nudge toward a Breathe session when it stays elevated.",
-                "New: a **recovery forecast** on the Intelligence screen - an evening estimate of tomorrow morning's Charge from today's effort, your planned sleep and your recent baseline. Clearly an estimate, with an error band, shown once there's enough history.",
+                "New: a **recovery forecast** on the Intelligence screen - an evening estimate of tomorrow morning's Recovery from today's effort, your planned sleep and your recent baseline. Clearly an estimate, with an error band, shown once there's enough history.",
                 "New: **navigate Today day by day** - chevrons and a date-picker jump replace the fixed 3-day selector, on every platform.",
                 "New (Android): a live **strap-battery %** and **recorded-nights streak** on the Today header.",
                 "Improved (iPhone/Mac): the Live tab is noticeably **smoother** - the rapid strap stream no longer re-renders the whole screen on every frame.",
@@ -1457,11 +1457,11 @@ enum AppChangelog {
             ]),
         Release(
             version: "2.9.0",
-            title: "Background GPS, sleep-time editing, log-ahead, and a sharper Rest tile",
+            title: "Background GPS, sleep-time editing, log-ahead, and a sharper Sleep tile",
             date: "June 2026",
             items: [
                 "Fixed (Android): GPS workouts kept tracking with the screen off. Distance was under-counting badly (a 2.8 km ride logged as 0.4 km) because tracking ran on the screen - it now runs in the always-on background service, so your route survives the screen turning off and the phone going in a pocket. Thanks @pilleuspulcher-blip (#215).",
-                "Fixed: the 'Rest' tile on Today now shows your Rest SCORE (out of 100, like Charge and Effort), with hours-in-bed kept as the caption - it was showing the hours where the score should be. Thanks @subscriptiondestroyer (#248).",
+                "Fixed: the 'Sleep' tile on Today now shows your Sleep SCORE (out of 100, like Recovery and Strain), with hours-in-bed kept as the caption - it was showing the hours where the score should be. Thanks @subscriptiondestroyer (#248).",
                 "New (Android): the Sleep screen gains in-app bed/wake-time editing - fix a mis-detected night and every metric recomputes live - plus Hours-vs-Needed and Sleep-Consistency cards, night-by-night navigation, and tappable metric details. Thanks @ujix.",
                 "New: log journal entries for **tomorrow**, not just today and yesterday - today's activities inform tomorrow's recovery. Thanks @Eph00n (#237).",
                 "Fixed (iPhone): the Explore list could appear empty even though the data was there - it now renders immediately with a brief 'scanning' hint instead of a blank list. Thanks @sebastianwoo (#199).",
@@ -1520,10 +1520,10 @@ enum AppChangelog {
             ]),
         Release(
             version: "2.8.4",
-            title: "New: a guide to how your Charge, Effort and Rest scores work",
+            title: "New: a guide to how your Recovery, Strain and Sleep scores work",
             date: "June 2026",
             items: [
-                "New: a clear in-app guide to how Noor's three daily scores - Charge, Effort and Rest - are calculated, and how they differ from WHOOP's Recovery, Strain and Sleep. Tap the ⓘ on any score on the Today screen, or open it any time from Settings → About → How your scores work. New here? A one-time card points you to it.",
+                "New: a clear in-app guide to how Noor's three daily scores - Recovery, Strain and Sleep - are calculated, and how they differ from WHOOP's Recovery, Strain and Sleep. Tap the ⓘ on any score on the Today screen, or open it any time from Settings → About → How your scores work. New here? A one-time card points you to it.",
                 "New: each score now explains how sure Noor is of it - Solid, Building or Calibrating - and carries a one-line description of what it measures.",
             ]),
         Release(
@@ -1539,7 +1539,7 @@ enum AppChangelog {
             title: "Cross-platform parity - Android now scores identically to macOS & iOS",
             date: "June 2026",
             items: [
-                "Fixed (Android): your Charge could read slightly low on Android because the skin-temperature term was weighted twice as hard as on macOS/iOS. All three apps now compute Charge identically. (#219)",
+                "Fixed (Android): your Recovery could read slightly low on Android because the skin-temperature term was weighted twice as hard as on macOS/iOS. All three apps now compute Recovery identically. (#219)",
                 "Fixed (Android, WHOOP 5/MG): the heart rate Noor derives from the optical (PPG) sensor on stretches with no measured HR now uses the same harmonic-rejecting estimator as macOS/iOS - it could previously lock onto half or double your true rate - and it now also recovers HR from short data runs the way the other apps do. (#219)",
                 "Fixed (Android): the respiratory-rate early-illness signal in Readiness now uses the same sensitivity thresholds and plausible-range filter as macOS/iOS, so all three apps flag it the same way.",
                 "Fixed: assorted smaller cross-platform tidy-ups - skin-temperature data is now kept over the same range on every platform (Android was dropping valid just-put-on readings), CSV exports round-trip byte-for-byte, and a couple of score-rounding edge cases now agree across apps.",
@@ -1550,7 +1550,7 @@ enum AppChangelog {
             date: "June 2026",
             items: [
                 "Improved (battery): Noor now backs off its history-sync polling when the strap keeps handing over nothing (off-wrist or not yet banking) instead of re-trying every 90 seconds - a manual or reconnect sync still runs instantly, and the first real record resumes normal cadence. Thanks @ryanbr (#217).",
-                "Improved: a just-synced night's Charge / Effort / Rest now appear the moment the sync finishes, instead of up to 15 minutes later. Thanks @FrostDev7 (#218).",
+                "Improved: a just-synced night's Recovery / Strain / Sleep now appear the moment the sync finishes, instead of up to 15 minutes later. Thanks @FrostDev7 (#218).",
                 "Improved (Android, battery): the persistent notification no longer re-draws with your live heart rate every second - it updates only when the connection, sync, recovery or battery state changes, cutting a constant background wakeup. Thanks @Eph00n and @spasypaddy (#216).",
             ]),
         Release(
@@ -1558,7 +1558,7 @@ enum AppChangelog {
             title: "New: Week in review, a live body console, fresher charts and more",
             date: "June 2026",
             items: [
-                "New: a **Week in review** - a deterministic, offline weekly digest of your Charge / Effort / Rest, HRV and resting HR, with week-over-week and vs-baseline changes and a plain-English read. It appears at the top of Trends once the week has a day or two of data. Thanks @subscriptiondestroyer (#208).",
+                "New: a **Week in review** - a deterministic, offline weekly digest of your Recovery / Strain / Sleep, HRV and resting HR, with week-over-week and vs-baseline changes and a plain-English read. It appears at the top of Trends once the week has a day or two of data. Thanks @subscriptiondestroyer (#208).",
                 "New (Live screen): a live **body console** - a clearer at-a-glance readout of heart rate, recent R-R, a rolling RMSSD and the live connection/signal state. Thanks @khalilkm01.",
                 "New: the Live heart-rate chart now has a **time axis** so you can read what window it covers and watch it scroll. Thanks @sebastianwoo (#198).",
                 "Improved: charts and metrics now resolve the **freshest source** for each value (imported WHOOP, then Noor-computed, then compatible Apple Health), so a screen never looks stale when newer data exists. Thanks @khalilkm01.",
@@ -1595,7 +1595,7 @@ enum AppChangelog {
             date: "June 2026",
             items: [
                 "Fixed (iPhone): the What's New screen shown after an update was sized for a desktop window, so it ran off the edges of the phone - you couldn't read the notes or reach the Got it button. It now fits the screen. Thanks @sebastianwoo (#185).",
-                "Fixed (iPhone): in Today's Synthesis, the Charge read-out card is now the same height as the ring card beside it, so the two line up instead of leaving a gap. Thanks @sebastianwoo (#186).",
+                "Fixed (iPhone): in Today's Synthesis, the Recovery read-out card is now the same height as the ring card beside it, so the two line up instead of leaving a gap. Thanks @sebastianwoo (#186).",
             ]),
         Release(
             version: "2.6.8",
@@ -1627,11 +1627,11 @@ enum AppChangelog {
             ]),
         Release(
             version: "2.6.4",
-            title: "Tidier workout names, correct Rest duration",
+            title: "Tidier workout names, correct Sleep duration",
             date: "June 2026",
             items: [
                 "Fixed: workout names from your strap now read as proper words - Traditional Strength Training instead of TraditionalStrengthTraining - on the Today tiles, the Workouts breakdown cards and the session list, on all platforms. Thanks @RichrdJ (#175).",
-                "Fixed: the Intelligence tab's Rest duration could read an hour too high (a 5h 39m night showed as 6h 39m) because the hours were rounded up instead of truncated. It now matches the Sleep tab and dashboard exactly. Thanks @FrostDev7 (#180).",
+                "Fixed: the Intelligence tab's Sleep duration could read an hour too high (a 5h 39m night showed as 6h 39m) because the hours were rounded up instead of truncated. It now matches the Sleep tab and dashboard exactly. Thanks @FrostDev7 (#180).",
             ]),
         Release(
             version: "2.6.3",
@@ -1651,17 +1651,17 @@ enum AppChangelog {
             ]),
         Release(
             version: "2.6.1",
-            title: "Effort scale fix for imported data",
+            title: "Strain scale fix for imported data",
             date: "June 2026",
             items: [
-                "Fixed: imported WHOOP Day Strain and workout strain now correctly land on Noor's 0-100 Effort axis (the 0-21 to 0-100 rescale was defined in v2.6.0 but not wired up), so imported and on-device Effort finally share one scale. And Noor's own CSV export now writes Effort on WHOOP's 0-21 scale, so re-importing your own export round-trips losslessly.",
+                "Fixed: imported WHOOP Day Strain and workout strain now correctly land on Noor's 0-100 Strain axis (the 0-21 to 0-100 rescale was defined in v2.6.0 but not wired up), so imported and on-device Strain finally share one scale. And Noor's own CSV export now writes Strain on WHOOP's 0-21 scale, so re-importing your own export round-trips losslessly.",
             ]),
         Release(
             version: "2.6.0",
-            title: "Charge, Effort & Rest - Noor's own scores, out of 100",
+            title: "Recovery, Strain & Sleep - Noor's own scores, out of 100",
             date: "June 2026",
             items: [
-                "New (Mac, iOS and Android): Noor now has its own daily scores, all out of 100 - Charge (how recovered and ready you are), Effort (the day cardiovascular + movement load), and Rest (last night sleep quality). They are computed on-device across WHOOP 4.0 and 5.0/MG from published sports-science methods (no WHOOP cloud): Charge folds HRV, resting heart rate, respiration, your skin-temperature deviation and Rest into one readiness number; Effort is your cardiovascular load curve; Rest weighs how long you slept versus your need, efficiency, restorative (deep + REM) sleep and consistency. Renamed from Recovery/Strain/Sleep and rescaled so everything reads on the same 0-100 axis. Imported WHOOP history is rescaled to match. They are honest approximations, not WHOOP scores.",
+                "New (Mac, iOS and Android): Noor now has its own daily scores, all out of 100 - Recovery (how recovered and ready you are), Strain (the day cardiovascular + movement load), and Sleep (last night sleep quality). They are computed on-device across WHOOP 4.0 and 5.0/MG from published sports-science methods (no WHOOP cloud): Recovery folds HRV, resting heart rate, respiration, your skin-temperature deviation and Sleep into one readiness number; Strain is your cardiovascular load curve; Sleep weighs how long you slept versus your need, efficiency, restorative (deep + REM) sleep and consistency. Renamed from Recovery/Strain/Sleep and rescaled so everything reads on the same 0-100 axis. Imported WHOOP history is rescaled to match. They are honest approximations, not WHOOP scores.",
             ]),
         Release(
             version: "2.5.0",

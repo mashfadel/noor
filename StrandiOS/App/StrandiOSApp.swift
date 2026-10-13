@@ -58,7 +58,9 @@ struct StrandiOSApp: App {
         // Noor: workout auto-detection defaults ON (upstream ships it off), so a session like squash
         // surfaces as a save-able card instead of silently never reaching Apple Health. A registered
         // default only applies until the user flips the Settings toggle.
-        UserDefaults.standard.register(defaults: [PuffinExperiment.autoDetectWorkoutsKey: true])
+        // Strain reads on WHOOP's familiar 0–21 axis by default.
+        UserDefaults.standard.register(defaults: [PuffinExperiment.autoDetectWorkoutsKey: true,
+                                                  UnitPrefs.effortScaleKey: EffortScale.whoop.rawValue])
         #if DEBUG
         // DEBUG-only promo-screenshot harness: when launched with `--demo-hour <Int>`, pin Today to that
         // hour's day-cycle scene + a per-hour stat frame. No-op (active stays nil) when the arg is absent.
@@ -380,6 +382,14 @@ struct StrandiOSApp: App {
                 Task { await model.runDeferredRescoreIfOwed() }
                 Task {
                     health.refreshAuthIfPreviouslyGranted()
+                    // Noor: Apple Health is the point of this app, so ask once on the first foreground
+                    // instead of waiting for the user to find More → Apple Health. Asked at most once;
+                    // a decline is then managed from iOS Settings or the Apple Health screen.
+                    if health.auth != .authorized,
+                       !UserDefaults.standard.bool(forKey: "noor.healthAuthAsked") {
+                        UserDefaults.standard.set(true, forKey: "noor.healthAuthAsked")
+                        await health.requestAuthorization()
+                    }
                     HealthWritebackBackgroundScheduler.updateSchedule(
                         isAuthorized: health.auth == .authorized)
                     await HealthSyncRefreshCoordinator.run(

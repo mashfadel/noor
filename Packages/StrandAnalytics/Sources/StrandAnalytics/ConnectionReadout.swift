@@ -274,7 +274,7 @@ public enum ConnectionReadout {
                 + "The strap is already charged, so charging again will not change this. Export a strap "
                 + "log from Test Centre so the clock exchange can be read."
         }
-        return lead + "Charge the strap to 100% and reconnect so the clock latches."
+        return lead + "Recovery the strap to 100% and reconnect so the clock latches."
     }
 
     /// #1809: one-line account of a finished BLE link, logged on every disconnect.

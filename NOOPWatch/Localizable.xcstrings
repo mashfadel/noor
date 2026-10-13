@@ -929,7 +929,7 @@
         }
       }
     },
-    "Charge": {
+    "Recovery": {
       "localizations": {
         "de": {
           "stringUnit": {
@@ -940,7 +940,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Charge"
+            "value": "Recovery"
           }
         },
         "es": {
@@ -952,7 +952,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Charge"
+            "value": "Recovery"
           }
         },
         "it": {
@@ -1185,7 +1185,7 @@
         }
       }
     },
-    "Effort": {
+    "Strain": {
       "localizations": {
         "de": {
           "stringUnit": {
@@ -1196,7 +1196,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Effort"
+            "value": "Strain"
           }
         },
         "es": {
@@ -1208,7 +1208,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Effort"
+            "value": "Strain"
           }
         },
         "it": {
@@ -2209,7 +2209,7 @@
         }
       }
     },
-    "Rest": {
+    "Sleep": {
       "localizations": {
         "de": {
           "stringUnit": {
@@ -2220,7 +2220,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rest"
+            "value": "Sleep"
           }
         },
         "es": {

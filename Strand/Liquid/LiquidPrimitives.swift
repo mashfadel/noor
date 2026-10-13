@@ -17,86 +17,36 @@ enum LiquidRender {
     /// this pass only deepens the material — recessed track, frosted inner disc, semantic progress
     /// gradient — without neon bloom, tip dots, or layout changes.
     static func vessel(_ base: GraphicsContext, _ size: CGSize, _ sim: LiquidSim, now: Double, tint: Color) {
+        // Noor (WHOOP-style dial): no bevelled disc. A thin dark track and a thick neon progress arc
+        // with a soft bloom, sitting straight on the black canvas.
         let diameter = max(2, min(size.width, size.height) - 3)
-        let rect = CGRect(x: (size.width - diameter) / 2, y: (size.height - diameter) / 2,
-                          width: diameter, height: diameter)
         let center = CGPoint(x: size.width / 2, y: size.height / 2)
-        let radius = diameter * 0.39
-        let lineWidth = max(5, diameter * 0.105)
+        let lineWidth = max(5, diameter * 0.085)
+        let radius = diameter / 2 - lineWidth / 2 - diameter * 0.075  // room for the bloom inside the canvas
+        let rect = CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2)
         let cap = StrokeStyle(lineWidth: lineWidth, lineCap: .round)
         var ctx = base
 
-        // Restrained outer lift — light gray shadow, not deep black.
-        let shadowRect = rect.offsetBy(dx: 0, dy: max(1, diameter * 0.010))
-        ctx.fill(Path(ellipseIn: shadowRect), with: .color(Color.black.opacity(0.14)))
-
-        // One continuous centre disc — soft 3D: light top face, gentle rim shade.
-        // No separate inset circle / hard ring line.
-        ctx.fill(Path(ellipseIn: rect), with: .linearGradient(
-            Gradient(colors: [
-                NoopVisualStyle.surfaceTop,
-                NoopVisualStyle.surfaceBottom
-            ]),
-            startPoint: CGPoint(x: rect.midX, y: rect.minY),
-            endPoint: CGPoint(x: rect.midX, y: rect.maxY)
-        ))
-        // Soft radial lift — brighter near the upper face, slightly deeper at the rim.
-        ctx.fill(Path(ellipseIn: rect), with: .radialGradient(
-            Gradient(stops: [
-                .init(color: Color.white.opacity(0.07), location: 0.00),
-                .init(color: Color.white.opacity(0.02), location: 0.42),
-                .init(color: Color.clear, location: 0.72),
-                .init(color: Color.black.opacity(0.10), location: 1.00)
-            ]),
-            center: CGPoint(x: rect.midX, y: rect.minY + diameter * 0.32),
-            startRadius: 0,
-            endRadius: diameter * 0.52
-        ))
-        // Very soft lower-edge shade for a lightly recessed read.
-        ctx.fill(Path(ellipseIn: rect), with: .linearGradient(
-            Gradient(stops: [
-                .init(color: Color.clear, location: 0.00),
-                .init(color: Color.clear, location: 0.55),
-                .init(color: Color.black.opacity(0.06), location: 1.00)
-            ]),
-            startPoint: CGPoint(x: rect.midX, y: rect.minY),
-            endPoint: CGPoint(x: rect.midX, y: rect.maxY)
-        ))
-
         let track = fullArc(center: center, radius: radius)
-
-        // Recessed track — gray channel (original border tone), not black.
-        ctx.stroke(track, with: .linearGradient(
-            Gradient(colors: [
-                Color.white.opacity(0.08),
-                NoopVisualStyle.border.opacity(0.18),
-                NoopVisualStyle.border.opacity(0.50)
-            ]),
-            startPoint: CGPoint(x: rect.midX, y: rect.minY),
-            endPoint: CGPoint(x: rect.midX, y: rect.maxY)
-        ), style: StrokeStyle(lineWidth: lineWidth + 1.6, lineCap: .round))
-
-        ctx.stroke(track, with: .color(NoopVisualStyle.border.opacity(0.72)), style: cap)
+        ctx.stroke(track, with: .color(Color.white.opacity(0.07)), style: cap)
 
         let level = max(0, min(1, sim.level))
         if level > 0.004 {
             let progress = partialArc(center: center, radius: radius, level: level)
 
-            // Contained under-lift — wider stroke, low opacity, no blur.
-            ctx.stroke(progress, with: .color(tint.opacity(0.18)),
-                       style: StrokeStyle(lineWidth: lineWidth + 2.0, lineCap: .round))
+            // Neon bloom: a blurred copy of the arc underneath.
+            var glow = ctx
+            glow.addFilter(.blur(radius: lineWidth * 0.75))
+            glow.stroke(progress, with: .color(tint.opacity(0.55)),
+                        style: StrokeStyle(lineWidth: lineWidth * 1.15, lineCap: .round))
 
-            // Progress arc — harsh semantic gradient (visible dark ↔ light bands).
+            // Progress arc — a smooth sweep from a deeper to the full neon tone.
             ctx.stroke(progress, with: .linearGradient(
-                progressGradient(tint),
+                Gradient(colors: [tint.liquidDarker(0.25), tint, tint.liquidLighter(0.15)]),
                 startPoint: CGPoint(x: rect.minX, y: rect.maxY),
                 endPoint: CGPoint(x: rect.maxX, y: rect.minY)
             ), style: cap)
         }
-
-        // Outer instrument rim (unchanged placement).
-        ctx.stroke(Path(ellipseIn: rect.insetBy(dx: 0.5, dy: 0.5)),
-                   with: .color(NoopVisualStyle.borderHighlight.opacity(0.55)), lineWidth: 1)
     }
 
     /// Full-span track arc — geometry unchanged from the original vessel.
@@ -561,7 +511,7 @@ struct CountUpNumber: View, Animatable {
 /// read-out. Callers supply diameter/tint/scale; optional caption sits under the number (Sleep: "of 100").
 struct LiquidScoreGauge: View {
     /// Matches `HeroScoreCell.vesselDiameter` — the Home hero trio size.
-    private static let homeHeroDiameter: CGFloat = 96
+    private static let homeHeroDiameter: CGFloat = 110
 
     let score: Double?
     let tint: Color
@@ -580,7 +530,7 @@ struct LiquidScoreGauge: View {
     @State private var shown: Double = 0
 
     private var frac: Double? { score.map { max(0, min(1, $0 / maxValue)) } }
-    private var centerFont: Font { StrandFont.rounded(diameter * 26 / Self.homeHeroDiameter) }
+    private var centerFont: Font { StrandFont.rounded(diameter * 36 / Self.homeHeroDiameter, weight: .heavy) }
     private var captionFont: Font { StrandFont.rounded(diameter * 0.085, weight: .medium) }
 
     var body: some View {

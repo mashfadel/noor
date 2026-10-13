@@ -22,9 +22,17 @@ public enum NoopVisualStyle {
     public static let secondaryText = Color(light: "#555555", dark: "#BDBDBD")
     public static let tertiaryText = Color(light: "#808080", dark: "#7A7A7A")
 
-    public static let mint = Color(light: "#5A7300", dark: "#CCFF00")
-    public static let mintDeep = Color(light: "#465900", dark: "#A3D600")
-    public static let mintGlow = Color(light: "#6E8C00", dark: "#E0FF66")
+    public static let mint = Color(light: "#008C7A", dark: "#1AF5D0")
+    public static let mintDeep = Color(light: "#006B5E", dark: "#00C2A8")
+    public static let mintGlow = Color(light: "#00A894", dark: "#7DFFE6")
+
+    // Noor brand neons: the accent (aqua) sits between green and blue; pink is the counter-accent.
+    public static let neonGreen = Color(hex: "#3DFF8F")
+    public static let neonAqua = Color(hex: "#1AF5D0")
+    public static let neonBlue = Color(hex: "#2E8BFF")
+    public static let neonPink = Color(hex: "#FF3EA5")
+    /// The Noor signature sweep (logo, hero accents): green → aqua → blue.
+    public static let brandGradient = Gradient(colors: [neonGreen, neonAqua, neonBlue])
 
     public static let cardRadius: CGFloat = 22
     public static let compactRadius: CGFloat = 16

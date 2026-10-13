@@ -97,7 +97,7 @@ public enum AccentColor: String, CaseIterable, Identifiable, Sendable {
     /// The custom colour's hex, kept separate so switching away from `.custom` and back keeps the choice.
     public static let customHexKey = "accent.customHex"
     /// Seeds the custom picker (mint) so a fresh `.custom` selection is not black.
-    public static let defaultCustomHex = "#CCFF00"
+    public static let defaultCustomHex = "#1AF5D0"
 
     public var label: String {
         switch self {

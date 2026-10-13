@@ -237,7 +237,7 @@ enum BatteryNotifier {
         d.set(result.newAlerted, forKey: criticalAlertedKey)
         if result.fire {
             post(identifier: "battery-critical",
-                 title: String(localized: "Charge your WHOOP now"),
+                 title: String(localized: "Recovery your WHOOP now"),
                  body: String(localized: "\(pct)% left. The strap stops recording near 10% — it won't capture tonight unless you charge it."),
                  interruptionLevel: .timeSensitive)
         }
@@ -269,7 +269,7 @@ enum BatteryNotifier {
         if result.fire, let runway = result.runway {
             post(identifier: "battery-bedtime",
                  title: String(localized: "Won't last the night"),
-                 body: String(localized: "\(BatteryEstimator.label(hours: runway.usableHours)) of recording left, but tonight needs about \(BatteryEstimator.label(hours: runway.requiredHours)). Charge before bed."),
+                 body: String(localized: "\(BatteryEstimator.label(hours: runway.usableHours)) of recording left, but tonight needs about \(BatteryEstimator.label(hours: runway.requiredHours)). Recovery before bed."),
                  interruptionLevel: .timeSensitive)
         }
     }

@@ -319,8 +319,8 @@ extension RecoveryScorer {
         let above = displayedValue > displayedBaseline
         if deltaPoints == 0 {
             return above
-                ? "above baseline, too small to change Charge"
-                : "below baseline, too small to change Charge"
+                ? "above baseline, too small to change Recovery"
+                : "below baseline, too small to change Recovery"
         }
         if above {
             return deltaPoints > 0

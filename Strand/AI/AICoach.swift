@@ -1010,7 +1010,7 @@ final class AICoachEngine: ObservableObject {
                 repo.days.compactMap { d in d.recovery.map { (d.day, $0) } },
                 uniquingKeysWith: { _, last in last })
             let ranked = EffectRanker.rank(behaviors: byBehaviour, controls: controls,
-                                           outcomeByDay: outcomeByDay, outcome: "Charge")
+                                           outcomeByDay: outcomeByDay, outcome: "Recovery")
                 .filter { $0.effect.significant }
                 .prefix(3)
             if !ranked.isEmpty {

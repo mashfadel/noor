@@ -1,6 +1,8 @@
 import SwiftUI
 
-// MARK: - BrandMark — the NOOP logo mark (Titanium & Gold)
+// MARK: - BrandMark — the Noor logo mark (interlocking neon rings)
+//
+// (Upstream NOOP notes below describe the original Titanium & Gold mark this replaced.)
 //
 // The app's identity glyph, rendered natively for use as a hero on onboarding,
 // "about", and empty states. Per the design handoff ("Engraved" app-icon
@@ -30,24 +32,29 @@ public struct BrandMark: View {
         self.size = size
     }
 
-    // The open ring sweeps ~80% of a full turn (≈291° of 364, per the logo spec),
-    // starting at 12 o'clock and going clockwise — the same orientation as the
-    // hero recovery ring, so the two read as one family.
-    private let openFraction: Double = 0.80
-    private var startAngle: Angle { .degrees(-90) }
+    // Noor mark: the "oo" of noor as two interlocking neon rings (green → aqua → blue, and
+    // violet → pink) on a black disc. Mirrors the app icon (Tools/noor/make_icon.swift).
+    private var ringRadius: CGFloat { size * 0.205 }
+    private var ringWidth: CGFloat { size * 0.075 }
+    private var offset: CGFloat { size * 0.13 }
+    private var rimWidth: CGFloat { max(1, size * 0.008) }
 
-    // Proportions derived from `size` so the mark is resolution-independent.
-    private var ringInset: CGFloat { size * 0.20 }          // tile edge → ring band
-    private var ringWidth: CGFloat { size * 0.13 }          // THICK gold stroke (matches the icon)
-    private var ringDiameter: CGFloat { size - ringInset * 2 }
-    private var coreDiameter: CGFloat { size * 0.18 }       // centre core dot
-    private var rimWidth: CGFloat { max(1, size * 0.008) }  // ~1px hairline rim
+    private static let leftStops = Gradient(colors: [NoopVisualStyle.neonGreen, NoopVisualStyle.neonAqua, NoopVisualStyle.neonBlue])
+    private static let rightStops = Gradient(colors: [Color(hex: "#A24BFF"), NoopVisualStyle.neonPink])
 
     public var body: some View {
         ZStack {
-            navyTile
-            goldRing
-            coreDot
+            Circle()
+                .fill(LinearGradient(colors: [Color(hex: "#161616"), Color(hex: "#000000")],
+                                     startPoint: .top, endPoint: .bottom))
+                .overlay(Circle().strokeBorder(StrandPalette.hairline, lineWidth: rimWidth))
+            ring(Self.rightStops, glow: NoopVisualStyle.neonPink).offset(x: offset)
+            ring(Self.leftStops, glow: NoopVisualStyle.neonAqua).offset(x: -offset)
+            // Lower crossing: the pink ring passes over the green one so the rings read as linked.
+            ring(Self.rightStops, glow: .clear)
+                .offset(x: offset)
+                .mask(Circle().frame(width: ringWidth * 2.2, height: ringWidth * 2.2)
+                        .offset(y: (ringRadius * ringRadius - offset * offset).squareRoot()))
         }
         .frame(width: size, height: size)
         .accessibilityElement(children: .ignore)
@@ -55,65 +62,12 @@ public struct BrandMark: View {
         .accessibilityAddTraits(.isImage)
     }
 
-    // MARK: Deep-navy tile
-
-    /// The navy disc the gold mark sits on — a deep-navy vertical ramp (lifted at
-    /// the top, deeper at the bottom) with a faint cool top sheen and a soft
-    /// hairline rim, matching the app icon. No shadow — flat and clean.
-    private var navyTile: some View {
+    private func ring(_ gradient: Gradient, glow: Color) -> some View {
         Circle()
-            .fill(
-                LinearGradient(
-                    colors: [Color(hex: "#1A1A1A"), Color(hex: "#050505")],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
-            // Faint cool top sheen — a soft light catch across the upper third (flat, no bloom).
-            .overlay(
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color(hex: "#2A2A2A").opacity(0.5), .clear],
-                            startPoint: .top,
-                            endPoint: .center
-                        )
-                    )
-                    .opacity(0.6)
-            )
-            // 1px hairline rim so the disc reads cleanly on the navy canvas.
-            .overlay(
-                Circle().strokeBorder(StrandPalette.hairline, lineWidth: rimWidth)
-            )
-    }
-
-    // MARK: Open gold recovery ring
-
-    /// The open ~80% gold arc — round-capped, stroked with the gold ramp via an
-    /// AngularGradient so the metal shifts along the sweep (light → gold → deep),
-    /// matching how the hero recovery ring fills.
-    private var goldRing: some View {
-        RecoveryArc(
-            startAngle: startAngle,
-            spanDegrees: 360 * openFraction,
-            fraction: 1,
-            lineWidth: ringWidth
-        )
-        .stroke(
-            NoopVisualStyle.mint,
-            style: StrokeStyle(lineWidth: ringWidth, lineCap: .round)
-        )
-        .frame(width: ringDiameter, height: ringDiameter)
-    }
-
-    // MARK: Solid gold core
-
-    /// The "on-device core" — a solid gold dot at the exact centre, completing the
-    /// open-ring + core-dot lock-up.
-    private var coreDot: some View {
-        Circle()
-            .fill(NoopVisualStyle.mint)
-            .frame(width: coreDiameter, height: coreDiameter)
+            .stroke(LinearGradient(gradient: gradient, startPoint: .bottomLeading, endPoint: .topTrailing),
+                    lineWidth: ringWidth)
+            .frame(width: ringRadius * 2, height: ringRadius * 2)
+            .shadow(color: glow.opacity(0.7), radius: size * 0.04)
     }
 }
 
