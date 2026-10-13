@@ -549,11 +549,10 @@ struct WorkoutDetailView: View {
                             // The session's Effort contribution ticks up to its value — the NOOP signature.
                             CountUpText(value: displayValue,
                                         format: { String(format: "%.1f", $0) },
-                                        font: StrandFont.rounded(28),
+                                        font: StrandFont.rounded(21, weight: .semibold),
                                         color: StrandPalette.textPrimary)
-                                .shadow(color: .black.opacity(0.5), radius: 5, y: 1)
                             Text(effortScale == .whoop ? "of 21" : "of 100")
-                                .font(StrandFont.caption)
+                                .font(StrandFont.rounded(9, weight: .medium))
                                 .foregroundStyle(StrandPalette.textSecondary)
                         }
                         .allowsHitTesting(false)

@@ -798,12 +798,11 @@ struct WorkoutsView: View {
                         CountUpText(
                             value: displayValue,
                             format: { String(format: "%.1f", $0) },
-                            font: StrandFont.rounded(46),
+                            font: StrandFont.rounded(diameter * 0.24, weight: .semibold),
                             color: StrandPalette.textPrimary
                         )
-                        .shadow(color: .black.opacity(0.5), radius: 6, y: 1)
                         Text(effortScale == .whoop ? "of 21" : "of 100")
-                            .font(StrandFont.caption)
+                            .font(StrandFont.rounded(max(9, diameter * 0.075), weight: .medium))
                             .foregroundStyle(StrandPalette.textSecondary)
                     }
                     .allowsHitTesting(false)   // taps fall through to the vessel → splash

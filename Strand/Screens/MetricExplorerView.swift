@@ -1267,6 +1267,20 @@ struct MetricDetailView: View {
     /// it) or a big count-up headline number, floated over a domain-tinted ScenicHeroBackground,
     /// with the category overline, the "as of" line, and the range pill. Mirrors TodayView's
     /// liquid score-hero idiom (and Health's Fitness-Age / Vitality vessels).
+    /// Noor: orb styling for the three daily scores (nil for every other metric, which keeps the ring).
+    static func scoreOrbStyle(_ key: String, value: Double) -> (tint: Color, accent: Color, fraction: Double, unit: String?)? {
+        switch key {
+        case HeroRingMetric.charge:
+            return (StrandPalette.recoveryColor(value), StrandPalette.chargeDeep, value / 100, "%")
+        case HeroRingMetric.effort:
+            return (StrandPalette.effortColor, StrandPalette.effortBright, value / 100, nil)
+        case HeroRingMetric.rest:
+            return (StrandPalette.restColor, StrandPalette.restDeep, value / 100, "%")
+        default:
+            return nil
+        }
+    }
+
     @ViewBuilder
     private func heroHeader(effectiveRange: ExploreRange,
                             windowed: [(day: String, value: Double)],
@@ -1314,7 +1328,33 @@ struct MetricDetailView: View {
                 // well — never over the chart below.
                 HStack {
                     Spacer(minLength: 0)
-                    if let fraction, let v = value {
+                    if let v = value, let orb = Self.scoreOrbStyle(metric.key, value: v) {
+                        // Noor: the three daily scores get the score orb, matching Sleep.
+                        VStack(spacing: 10) {
+                            NoorScoreOrb(diameter: 210, tint: orb.tint, accent: orb.accent, intensity: orb.fraction) {
+                                VStack(spacing: 2) {
+                                    HStack(alignment: .firstTextBaseline, spacing: 1) {
+                                        Text(heroValue)
+                                            .font(StrandFont.rounded(54, weight: .semibold))
+                                            .tracking(-1.5)
+                                        if let unit = orb.unit {
+                                            Text(unit).font(StrandFont.rounded(20, weight: .semibold)).opacity(0.6)
+                                        }
+                                    }
+                                    .foregroundStyle(.white)
+                                    Text(metric.title.uppercased())
+                                        .font(StrandFont.rounded(10, weight: .semibold)).tracking(1.4)
+                                        .foregroundStyle(Color.white.opacity(0.6))
+                                }
+                            }
+                            .padding(.vertical, 16)
+                            Text(asOf)
+                                .font(StrandFont.footnote)
+                                .foregroundStyle(StrandPalette.textTertiary)
+                        }
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("\(metric.title) \(heroValue), \(asOf)")
+                    } else if let fraction, let v = value {
                         VStack(spacing: 10) {
                             ZStack {
                                 // The big hero vessel stays live (animated) — the one sloshing gauge on the

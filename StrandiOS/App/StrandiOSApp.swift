@@ -72,7 +72,19 @@ struct StrandiOSApp: App {
                                                   PuffinExperiment.continuousHrvOvernightOnlyKey: false,
                                                   // ...and protect the strap: at ≤20% strap battery the background
                                                   // stream pauses and the sync cadence stretches.
-                                                  PuffinExperiment.powerSavingKey: true])
+                                                  PuffinExperiment.powerSavingKey: true,
+                                                  // No Live Activities by default (the Lock Screen heart-rate
+                                                  // widget covers it); both switches live in Settings.
+                                                  UnitPrefs.liveActivityKey: false,
+                                                  UnitPrefs.syncLiveActivityKey: false,
+                                                  // Strain counts load at every intensity above sitting (Banister),
+                                                  // so an ordinary active day reads a few points like WHOOP rather
+                                                  // than ~0 (Edwards only starts at 50% heart-rate reserve).
+                                                  PuffinExperiment.banisterEffortKey: true,
+                                                  // Automatic daily backup into iCloud Drive › Noor (BackupSync's
+                                                  // own-folder mode, which now prefers the iCloud container).
+                                                  "backupSync.auto": true,
+                                                  "backupSync.useInternalFolder": true])
         #if DEBUG
         // DEBUG-only promo-screenshot harness: when launched with `--demo-hour <Int>`, pin Today to that
         // hour's day-cycle scene + a per-hour stat frame. No-op (active stays nil) when the arg is absent.
@@ -190,7 +202,10 @@ struct StrandiOSApp: App {
         // scenePhase pass below starts the offload and wrote to Health in parallel with it, so a night
         // synced on open only reached Health at the next launch. Weak so the scene owns the bridge's
         // lifetime; the bridge no-ops unless Health was authorized.
-        model.healthWriteBack = { [weak bridge] in
+        model.healthWriteBack = { [weak bridge, weak model] in
+            // Noor: save any workout the strap's heart rate shows (WHOOP-style auto-detect), so it reaches
+            // Health in the same pass without anyone tapping Start or Save on the phone.
+            await model?.repo.autoSaveDetectedWorkouts()
             _ = await bridge?.writeBackAfterNewData()
         }
     }
@@ -405,6 +420,7 @@ struct StrandiOSApp: App {
                     // instead of waiting for the user to find More → Apple Health. Asked at most once;
                     // a decline is then managed from iOS Settings or the Apple Health screen.
                     if health.auth != .authorized,
+                       UserDefaults.standard.bool(forKey: "noop.onboarded"),   // first run asks inside setup
                        !UserDefaults.standard.bool(forKey: "noor.healthAuthAsked") {
                         UserDefaults.standard.set(true, forKey: "noor.healthAuthAsked")
                         await health.requestAuthorization()
@@ -489,6 +505,7 @@ struct StrandiOSApp: App {
 /// excluded `RootView()` sidebar for `RootTabView()`. The shared `OnboardingWizard`, `TermsGateView`,
 /// `WhatsNewView`, `AppChangelog`, and `Terms` symbols all compile into the iOS target unchanged.
 private struct iOSRootView: View {
+    @EnvironmentObject private var health: HealthKitBridge
     @AppStorage("noop.onboarded") private var onboarded = false
     @AppStorage("noop.lastSeenChangelogVersion") private var lastSeenChangelog = ""
     @AppStorage("noop.acceptedTermsVersion") private var acceptedTerms = ""
@@ -528,7 +545,7 @@ private struct iOSRootView: View {
                     // A brand-new user just saw the expectations in onboarding — don't also pop the
                     // changelog at them; mark them current.
                     lastSeenChangelog = AppChangelog.currentVersion
-                })
+                }, onConnectHealth: { await health.requestAuthorization() })
                 .transition(.opacity)
                 .zIndex(1)
             }

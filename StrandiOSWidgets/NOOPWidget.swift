@@ -91,7 +91,8 @@ struct NOOPWidgetView: View {
 
     private var recoveryGauge: some View {
         Gauge(value: Double(snap.recovery ?? 0), in: 0...100) {
-            Image(systemName: "heart.fill")
+            // Noor: "REC", not a heart — a heart here read as heart rate on the Lock Screen.
+            Text(verbatim: "REC")
         } currentValueLabel: {
             Text(snap.recovery.map { "\($0)" } ?? "–")
         }

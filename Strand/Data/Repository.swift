@@ -3286,6 +3286,16 @@ final class Repository: ObservableObject {
     /// didn't classify). Built through the same `WorkoutSource.buildManualRow` the manual sheet uses, so
     /// it persists exactly like a hand-entered session under the strap source. After saving, the screen
     /// re-queries (the new saved span now excludes this window from re-suggestion).
+    /// Noor: save every detected workout automatically (WHOOP-style) instead of waiting for a tap on the
+    /// suggestion card. Bounded per pass; each save joins the saved spans, so the next scan moves on.
+    /// Saved as "Workout" — the sport can be changed afterwards from the workout itself.
+    func autoSaveDetectedWorkouts() async {
+        for _ in 0..<6 {
+            guard let w = await autoDetectCandidate() else { return }
+            guard await saveDetectedWorkout(w) else { return }
+        }
+    }
+
     @discardableResult
     func saveDetectedWorkout(_ w: DetectedWorkout) async -> Bool {
         let durationMin = max(1, w.durationMin)

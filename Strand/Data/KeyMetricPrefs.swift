@@ -76,7 +76,11 @@ enum KeyMetricPrefs {
     /// ONLY the enabled tiles in their saved order — the editor pairs it with the disabled remainder.
     static func decodeEnabled(_ raw: String) -> [KeyMetric] {
         let trimmed = raw.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else { return KeyMetric.defaultOrder }
+        guard !trimmed.isEmpty else {
+            // Noor: the three hero dials already show Recovery, Strain and Sleep, so the default grid skips them
+            // (still addable from Edit).
+            return KeyMetric.defaultOrder.filter { ![.charge, .effort, .rest].contains($0) }
+        }
         var seen = Set<KeyMetric>()
         var result: [KeyMetric] = []
         for token in trimmed.split(separator: ",") {

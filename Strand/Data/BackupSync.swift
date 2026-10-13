@@ -196,6 +196,14 @@ enum FolderBackup {
     /// NOOP's own Files-visible backup folder: `<sandbox>/Documents/Backups`, created on first use.
     /// Returns nil only if Documents can't be located (never in practice).
     private static func internalFolderURL() -> URL? {
+        // Noor: prefer the app's own iCloud Drive folder (iCloud Drive › Noor › Backups), so backups leave
+        // the phone automatically. Falls back to the on-device Documents folder when iCloud is off.
+        if let ubiquity = FileManager.default.url(forUbiquityContainerIdentifier: nil) {
+            let dir = ubiquity.appendingPathComponent("Documents/Backups", isDirectory: true)
+            if (try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)) != nil {
+                return dir
+            }
+        }
         guard let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
         let dir = docs.appendingPathComponent("Backups", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)

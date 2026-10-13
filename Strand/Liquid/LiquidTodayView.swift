@@ -53,6 +53,8 @@ struct LiquidTodayView: View {
 
     // async-loaded via the confirmed Repository accessors
     @State private var restScore: Double?          // sleep_performance, day-keyed
+    /// Noor: true once the big dials have scrolled away, which slides in the compact sticky dial bar.
+    @State private var showCompactHero = false
     /// Input providers for the three scores, keyed by recovery / strain / sleep_performance.
     @State private var heroProviderByMetric: [String: ScoreInputProvider] = [:]
     @State private var stress: Double?             // StressModel(...).score, 0–3
@@ -402,6 +404,14 @@ struct LiquidTodayView: View {
                     // so it renders nothing by default.
                     AutoWorkoutCard()
                     dataSourcesSection
+                    Button { guideSection = .charge } label: {
+                        Label("How scores work", systemImage: "info.circle")
+                            .font(StrandFont.rounded(13, weight: .medium))
+                            .foregroundStyle(StrandPalette.textTertiary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 10)
+                    }
+                    .buttonStyle(.plain)
                     Button { customizationDestination = .today } label: {
                         Label("Customize Today", systemImage: "slider.horizontal.3")
                             .font(StrandFont.rounded(13, weight: .medium))
@@ -424,6 +434,17 @@ struct LiquidTodayView: View {
             #endif
         }
         .coordinateSpace(name: Self.pullSpace)
+        #if os(iOS)
+        .onScrollGeometryChange(for: Bool.self) { $0.contentOffset.y + $0.contentInsets.top > 300 } action: { _, past in
+            withAnimation(.snappy(duration: 0.28)) { showCompactHero = past }
+        }
+        .overlay(alignment: .top) {
+            if showCompactHero {
+                compactHeroBar
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        #endif
         #if os(iOS)
         // #697 parity: ScreenScaffold already stops a vertical scroll from drifting/bouncing the
         // screen left-right on every other tab. Liquid Today runs its own ScrollView (not
@@ -671,6 +692,64 @@ struct LiquidTodayView: View {
         withAnimation(StrandMotion.interactive) { selectedDayOffset = next }
     }
 
+    // MARK: - Compact sticky dials (Noor, WHOOP-style)
+
+    /// Three small dials that stay pinned at the top once the big ones scroll away.
+    private var compactHeroBar: some View {
+        let strain = effortStrain(displayDay).map { UnitFormatter.effortValue($0, scale: effortScale) }
+        let strainMax: Double = effortScale == .whoop ? 21 : 100
+        return HStack(spacing: 0) {
+            compactDial("Sleep", value: restScore.map { "\(Int($0.rounded()))%" },
+                        fraction: restScore.map { $0 / 100 }, tint: StrandPalette.restColor, route: .sleep)
+            compactDial("Recovery", value: chargeDisplay.pct.map { "\(Int($0.rounded()))%" },
+                        fraction: chargeDisplay.pct.map { $0 / 100 },
+                        tint: chargeDisplay.pct.map { StrandPalette.recoveryColor($0) } ?? StrandPalette.chargeColor,
+                        route: .metric(HeroRingMetric.charge))
+            compactDial("Strain", value: strain.map { effortScale == .whoop ? String(format: "%.1f", $0) : "\(Int($0.rounded()))" },
+                        fraction: strain.map { $0 / strainMax }, tint: StrandPalette.effortColor,
+                        route: .metric(HeroRingMetric.effort))
+        }
+        .padding(.horizontal, 12)
+        .padding(.top, 4)
+        .padding(.bottom, 10)
+        .frame(maxWidth: .infinity)
+        .background(Color.black.ignoresSafeArea(edges: .top))
+        .overlay(alignment: .bottom) {
+            // A short fade so content slides under the bar instead of meeting a hard edge.
+            LinearGradient(colors: [Color.black, Color.black.opacity(0)], startPoint: .top, endPoint: .bottom)
+                .frame(height: 16)
+                .offset(y: 16)
+                .allowsHitTesting(false)
+        }
+    }
+
+    private func compactDial(_ label: LocalizedStringKey, value: String?, fraction: Double?, tint: Color,
+                             route: TabRoute) -> some View {
+        NavigationLink(value: route) {
+            HStack(spacing: 8) {
+                ZStack {
+                    Circle().stroke(Color.white.opacity(0.1), lineWidth: 3)
+                    Circle().trim(from: 0, to: max(0.001, min(1, fraction ?? 0)))
+                        .stroke(tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
+                        .shadow(color: tint.opacity(0.7), radius: 3)
+                        .opacity(fraction == nil ? 0 : 1)
+                }
+                .frame(width: 22, height: 22)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(label).textCase(.uppercase)
+                        .font(StrandFont.rounded(9.5, weight: .semibold)).tracking(1)
+                        .foregroundStyle(StrandPalette.textSecondary)
+                    Text(value ?? "–")
+                        .font(StrandFont.rounded(15, weight: .semibold))
+                        .foregroundStyle(StrandPalette.textPrimary)
+                }
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.plain)
+    }
+
     // MARK: - My Day (Noor, WHOOP-style)
 
     /// "My Day": today's activities with one-tap add/start (alarms live on the Sleep tab).
@@ -771,18 +850,7 @@ struct LiquidTodayView: View {
             // Noor: WHOOP order — Sleep · Recovery · Strain.
             HeroScoreCell(label: String(localized: "Sleep"), score: restScore, tint: StrandPalette.restColor,
                           animated: dataLoaded, onGuide: { guideSection = .rest }, unit: "%",
-                          detailRoute: .metric(HeroRingMetric.rest))
-                .overlay(alignment: .top) {
-                    if let sourceLabel = heroSourceLabel {
-                        SourceBadge("\(sourceLabel)", tint: StrandPalette.textSecondary)
-                            // Match the badge's trailing edge to the Rest vessel and centre it on the card border.
-                            .fixedSize()
-                            .frame(width: HeroScoreCell.vesselDiameter, alignment: .trailing)
-                            .offset(y: -(NoopMetrics.space4 + NoopMetrics.sourceBadgeHeight / 2))
-                            .allowsHitTesting(false)
-                            .accessibilityLabel(Text("Source: \(sourceLabel)"))
-                    }
-                }
+                          detailRoute: .sleep)
             HeroScoreCell(label: String(localized: "Recovery"), score: chargeDisplay.pct,
                           tint: chargeDisplay.pct.map { StrandPalette.recoveryColor($0) } ?? StrandPalette.chargeColor,
                           animated: dataLoaded, onGuide: { guideSection = .charge }, unit: "%",
@@ -2345,6 +2413,15 @@ private struct HeroScoreCell: View {
         }
     }
 
+    private var labelRow: some View {
+        HStack(spacing: 3) {
+            Text(label.uppercased()).font(StrandFont.overline).tracking(1.6)
+                .lineLimit(1).minimumScaleFactor(0.7)
+            Image(systemName: "chevron.right").font(.system(size: 9, weight: .semibold)).opacity(0.6)
+        }
+        .foregroundStyle(StrandPalette.textSecondary)
+    }
+
     /// The score as VoiceOver should say it, matching the label row's own phrasing.
     private var spokenScore: String {
         guard let score else { return String(localized: "no data yet") }
@@ -2356,20 +2433,17 @@ private struct HeroScoreCell: View {
     var body: some View {
         VStack(spacing: 7) {
             gaugeView
-            Button(action: onGuide) {
-                HStack(spacing: 3) {
-                    // #74: one line, shrink-to-fit rather than wrap under large Dynamic Type (mirrors the
-                    // score number above) so CHARGE/EFFORT/REST never grow the hero card to two lines.
-                    Text(label.uppercased()).font(StrandFont.overline).tracking(1.6)
-                        .lineLimit(1).minimumScaleFactor(0.7)
-                    Image(systemName: "chevron.right").font(.system(size: 9, weight: .semibold)).opacity(0.6)
+            // Noor: the label opens the same score page as the ring (the scoring guide moved to
+            // "How scores work" at the foot of Today).
+            Group {
+                if let detailRoute {
+                    NavigationLink(value: detailRoute) { labelRow }
+                } else {
+                    Button(action: onGuide) { labelRow }
                 }
-                // Theme-aware hero label (#1160): normal text token — readable on Dark and Light
-                // panel surfaces alike (was onDark* when the hero fill was pinned dark).
-                .foregroundStyle(StrandPalette.textSecondary)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(Text("\(label), \(spokenScore). See how it is scored."))
+            .accessibilityLabel(Text("\(label), \(spokenScore)"))
         }
         .frame(maxWidth: .infinity)
     }

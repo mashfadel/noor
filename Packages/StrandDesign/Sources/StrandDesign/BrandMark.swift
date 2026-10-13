@@ -107,7 +107,6 @@ public struct NoorOrb: View {
             guard breathing, !reduceMotion else { return }
             withAnimation(.easeInOut(duration: 2.8).repeatForever(autoreverses: true)) { inhale = true }
         }
-        .drawingGroup()
     }
 }
 

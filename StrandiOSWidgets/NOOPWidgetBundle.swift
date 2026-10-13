@@ -12,6 +12,7 @@ struct NOOPWidgetBundle: WidgetBundle {
         NOOPLiveActivity()
         CoachBriefWidget()
         HeartRateWidget()
+        HeartRateLockWidget()
         StressWidget()
         LiftLiveActivity()
         SyncLiveActivity()

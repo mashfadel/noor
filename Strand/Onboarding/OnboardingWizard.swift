@@ -27,9 +27,12 @@ public struct OnboardingWizard: View {
 
     /// Called when the user finishes (or skips to the end of) onboarding.
     public var onFinished: () -> Void
+    /// Noor: connects Apple Health from the Health step (iOS supplies it; nil hides the step's action).
+    public var onConnectHealth: (() async -> Void)?
 
-    public init(onFinished: @escaping () -> Void) {
+    public init(onFinished: @escaping () -> Void, onConnectHealth: (() async -> Void)? = nil) {
         self.onFinished = onFinished
+        self.onConnectHealth = onConnectHealth
     }
 
     // NOTE: the root deliberately does NOT observe the fast-updating model/live/profile
@@ -38,7 +41,7 @@ public struct OnboardingWizard: View {
     // handles the bond→celebration transition without re-rendering the root.
 
     private enum Step: Int, CaseIterable {
-        case welcome, what, expectations, bluetooth, wear, scan, bonded, profile, importData, notifications, appearance, done
+        case welcome, what, expectations, bluetooth, wear, scan, bonded, profile, appleHealth, importData, notifications, appearance, done
 
         var isFirst: Bool { self == .welcome }
         var isLast: Bool { self == .done }
@@ -73,6 +76,7 @@ public struct OnboardingWizard: View {
                     case .scan:       ScanStep(advance: advance)
                     case .bonded:     BondedStep()
                     case .profile:    ProfileStep()
+                    case .appleHealth: AppleHealthStep()
                     case .importData: ImportStep()
                     case .notifications: NotificationsStep()
                     case .appearance: AppearanceStep()
@@ -110,6 +114,16 @@ public struct OnboardingWizard: View {
     private var background: some View {
         ZStack {
             StrandPalette.surfaceBase
+            // Noor: a slow aurora of the three brand neons behind every step.
+            ZStack {
+                Circle().fill(NoopVisualStyle.neonGreen.opacity(0.22)).frame(width: 420).offset(x: -150, y: -260)
+                Circle().fill(NoopVisualStyle.neonBlue.opacity(0.20)).frame(width: 420).offset(x: 170, y: -120)
+                Circle().fill(NoopVisualStyle.neonPink.opacity(0.16)).frame(width: 380).offset(x: -60, y: 320)
+            }
+            .blur(radius: 110)
+            .scaleEffect(glow ? 1.08 : 0.96)
+            .animation(StrandMotion.breathe(reduced: poseStill), value: glow)
+            .ignoresSafeArea()
             // A slow ambient bloom that breathes — the substrate feels alive. Kept subtle
             // (≈⅓ the old gold opacity) so it's a minimal gold hint, not a wash.
             RadialGradient(
@@ -192,6 +206,7 @@ public struct OnboardingWizard: View {
         case .scan:       return String(localized: "Continue")
         case .bonded:     return String(localized: "Continue")
         case .profile:    return String(localized: "Save & Continue")
+        case .appleHealth: return onConnectHealth == nil ? String(localized: "Continue") : String(localized: "Connect Apple Health")
         case .importData: return String(localized: "Continue")
         case .notifications: return String(localized: "Continue")
         case .appearance: return String(localized: "Continue")
@@ -226,6 +241,15 @@ public struct OnboardingWizard: View {
     /// already determined (so a re-run/upgrade doesn't re-prompt), and advance once the OS dialog is
     /// dismissed either way — the per-feature toggles still handle a later denial on their own.
     private func advance() {
+        if step == .appleHealth, let onConnectHealth {
+            // Noor: the Health permission sheet, asked here with context instead of on first launch.
+            UserDefaults.standard.set(true, forKey: "noor.healthAuthAsked")
+            Task { @MainActor in
+                await onConnectHealth()
+                advanceStep()
+            }
+            return
+        }
         guard step != .notifications else {
             UNUserNotificationCenter.current().getNotificationSettings { settings in
                 guard settings.authorizationStatus == .notDetermined else {
@@ -278,26 +302,73 @@ private struct WelcomeStep: View {
         StepShell {
             VStack(spacing: 24) {
                 Spacer()
-                // The hero mark — the Engraved titanium BrandMark (open gold ring +
-                // core dot on a brushed-titanium tile). Clean and flat; it draws in
-                // with a calm scale + fade, no glow.
-                BrandMark(size: 120)
-                    .scaleEffect(appear ? 1 : 0.92)
+                // Noor: the living orb, the lowercase wordmark, one line of promise.
+                BrandMark(size: 190)
+                    .scaleEffect(appear ? 1 : 0.9)
                     .opacity(appear ? 1 : 0)
-                Text("all your data, none of the cloud")
-                    .font(StrandFont.title2)
-                    .foregroundStyle(StrandPalette.textSecondary)
+                Text(verbatim: "noor")
+                    .font(StrandFont.rounded(56, weight: .semibold))
+                    .tracking(-1.5)
+                    .foregroundStyle(StrandPalette.textPrimary)
                     .opacity(appear ? 1 : 0)
-                Text("A private window into your recovery, sleep and strain. Read straight from your strap, kept only on \(Platform.deviceNounPhrase).")
+                Text("your health, in a new light")
+                    .font(StrandFont.rounded(20, weight: .medium))
+                    .foregroundStyle(LinearGradient(gradient: NoopVisualStyle.brandGradient, startPoint: .leading, endPoint: .trailing))
+                    .opacity(appear ? 1 : 0)
+                Text("Sleep, recovery and strain from your strap, synced to Apple Health. Private, and kept on \(Platform.deviceNounPhrase).")
                     .font(StrandFont.body)
-                    .foregroundStyle(StrandPalette.textTertiary)
+                    .foregroundStyle(StrandPalette.textSecondary)
                     .multilineTextAlignment(.center)
-                    .frame(maxWidth: 420)
+                    .frame(maxWidth: 360)
                     .opacity(appear ? 1 : 0)
                 Spacer()
             }
         }
         .onAppear { withAnimation(StrandMotion.hero) { appear = true } }
+    }
+}
+
+// MARK: - Noor · Apple Health
+
+private struct AppleHealthStep: View {
+    var body: some View {
+        StepShell {
+            VStack(spacing: 22) {
+                Spacer()
+                Image(systemName: "heart.text.square.fill")
+                    .font(.system(size: 64))
+                    .foregroundStyle(NoopVisualStyle.neonPink)
+                    .shadow(color: NoopVisualStyle.neonPink.opacity(0.6), radius: 18)
+                Text("Everything, in Apple Health")
+                    .font(StrandFont.rounded(28, weight: .semibold))
+                    .foregroundStyle(StrandPalette.textPrimary)
+                    .multilineTextAlignment(.center)
+                Text("Noor writes what your strap measures straight into Apple Health, on its own after every sync.")
+                    .font(StrandFont.body)
+                    .foregroundStyle(StrandPalette.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 380)
+                VStack(alignment: .leading, spacing: 10) {
+                    row("bed.double.fill", "Sleep with stages")
+                    row("waveform.path.ecg", "Heart rate, HRV and resting heart rate")
+                    row("figure.walk", "Steps and workouts")
+                    row("lungs.fill", "Blood oxygen and respiratory rate")
+                }
+                .padding(18)
+                .background(NoopPanelSurface(cornerRadius: 20))
+                Text("On the next screen, tap Turn On All.")
+                    .font(StrandFont.rounded(13, weight: .medium))
+                    .foregroundStyle(StrandPalette.textTertiary)
+                Spacer()
+            }
+        }
+    }
+
+    private func row(_ icon: String, _ text: LocalizedStringKey) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon).frame(width: 22).foregroundStyle(NoopVisualStyle.neonAqua)
+            Text(text).font(StrandFont.rounded(15, weight: .medium)).foregroundStyle(StrandPalette.textPrimary)
+        }
     }
 }
 
@@ -1390,7 +1461,7 @@ private struct PrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity)
-            .foregroundStyle(Color.white)
+            .foregroundStyle(Color.black)   // Noor: dark label on the bright neon fill
             .padding(.vertical, 14)
             .padding(.horizontal, 20)
             .background(

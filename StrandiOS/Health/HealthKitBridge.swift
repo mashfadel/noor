@@ -154,7 +154,10 @@ final class HealthKitBridge: ObservableObject {
     // attached to written workouts. Kept separate from the four nightly-vital ids so the permission
     // expansion and each independently-authorized writer remain explicit.
     private static let highResQuantityWriteIds: [HKQuantityTypeIdentifier] = [
-        .heartRate, .activeEnergyBurned, .distanceWalkingRunning, .distanceCycling
+        .heartRate, .activeEnergyBurned, .distanceWalkingRunning, .distanceCycling,
+        // Noor: the strap's steps, in 15-minute samples, so Health's per-interval source priority
+        // de-duplicates them against the iPhone's own count instead of adding the two together.
+        .stepCount
     ]
 
     // MARK: - Authorization
@@ -876,6 +879,7 @@ final class HealthKitBridge: ObservableObject {
         await attempt { try await writeSleep(sessions: sessions) }
         await attempt { try await writeHeartRate(fromTs: fromTs, nowTs: nowTs) }
         await attempt { try await writeWorkouts(whoopStore: whoopStore, fromTs: fromTs, toTs: nowTs) }
+        await attempt { try await writeSteps(whoopStore: whoopStore, nowTs: nowTs) }
         if let firstError { throw firstError }
     }
 
@@ -1135,6 +1139,36 @@ final class HealthKitBridge: ObservableObject {
     /// sample external-UUID keys at this volume) and rewrites the window, so a strap offload that
     /// backfills a recent night reconciles. Offloads older than 48 h behind the cursor are missed
     /// until the cursor is cleared — accepted trade-off for not re-walking 14 days every sync.
+    /// Noor: write the strap's step count as 15-minute samples over the last two days. Same delta math
+    /// as the app's daily total (ShortcutHealthExport.aggregate). Our own prior step samples in the window
+    /// are deleted first, so re-runs replace rather than stack. The still-open window is left out so a
+    /// partial count is never frozen. Interval samples (not one daily total) are what let Health's source
+    /// priority pick one count per period when the iPhone also counted.
+    private func writeSteps(whoopStore: WhoopStore, nowTs: Int) async throws {
+        guard let type = HKQuantityType.quantityType(forIdentifier: .stepCount),
+              store.authorizationStatus(for: type) == .sharingAuthorized else { return }
+        let window = ShortcutHealthExport.windowSeconds
+        let end = (nowTs / window) * window
+        let from = end - 2 * 86_400
+        let raw = try await whoopStore.stepSamples(deviceId: noopDeviceId, from: from - window, to: end - 1,
+                                                   limit: ShortcutHealthExport.readLimit)
+        let windows = ShortcutHealthExport.aggregate(hr: [], rr: [], steps: raw, end: end)
+            .filter { $0.start >= from && ($0.steps ?? 0) > 0 }
+        guard !windows.isEmpty else { return }
+        let pred = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            HKQuery.predicateForObjects(from: HKSource.default()),
+            HKQuery.predicateForSamples(withStart: Date(timeIntervalSince1970: TimeInterval(from)),
+                                        end: Date(timeIntervalSince1970: TimeInterval(end)), options: []),
+        ])
+        _ = try? await store.deleteObjects(of: type, predicate: pred)
+        let samples = windows.map { w in
+            HKQuantitySample(type: type, quantity: .init(unit: .count(), doubleValue: Double(w.steps ?? 0)),
+                             start: Date(timeIntervalSince1970: TimeInterval(w.start)),
+                             end: Date(timeIntervalSince1970: TimeInterval(w.start + window)))
+        }
+        try await store.save(samples)
+    }
+
     private func writeHeartRate(fromTs: Int, nowTs: Int) async throws {
         guard let type = HKQuantityType.quantityType(forIdentifier: .heartRate),
               store.authorizationStatus(for: type) == .sharingAuthorized else { return }

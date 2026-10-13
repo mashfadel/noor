@@ -77,6 +77,18 @@
 	<string>Noor transcribes your question on-device so you can ask the coach out loud instead of typing. Audio never leaves your iPhone.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>NSUbiquitousContainers</key>
+	<dict>
+		<key>iCloud.$(PRODUCT_BUNDLE_IDENTIFIER)</key>
+		<dict>
+			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
+			<true/>
+			<key>NSUbiquitousContainerName</key>
+			<string>Noor</string>
+			<key>NSUbiquitousContainerSupportedFolderLevels</key>
+			<string>Any</string>
+		</dict>
+	</dict>
 	<key>OURA_CLIENT_ID</key>
 	<string>$(OURA_CLIENT_ID)</string>
 	<key>OURA_CLIENT_SECRET</key>

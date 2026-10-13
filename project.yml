@@ -321,6 +321,12 @@ targets:
         # Both keys are required for the folder to actually appear in Files.
         UIFileSharingEnabled: true
         LSSupportsOpeningDocumentsInPlace: true
+        # Noor: show the iCloud container as "Noor" in iCloud Drive / Files.
+        NSUbiquitousContainers:
+          iCloud.$(PRODUCT_BUNDLE_IDENTIFIER):
+            NSUbiquitousContainerIsDocumentScopePublic: true
+            NSUbiquitousContainerName: Noor
+            NSUbiquitousContainerSupportedFolderLevels: Any
         # Oura BYO-app OAuth credentials (values come from configFiles above); read at runtime via
         # OuraCredentials.fromBundle. Absent/blank values cleanly disable the Connect-Oura lane.
         OURA_CLIENT_ID: $(OURA_CLIENT_ID)
@@ -339,6 +345,13 @@ targets:
         com.apple.developer.healthkit.access: []
         com.apple.security.application-groups:
           - $(APP_GROUP_ID)
+        # Noor: iCloud Drive folder for automatic backups (iCloud Drive › Noor).
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.$(PRODUCT_BUNDLE_IDENTIFIER)
+        com.apple.developer.ubiquity-container-identifiers:
+          - iCloud.$(PRODUCT_BUNDLE_IDENTIFIER)
+        com.apple.developer.icloud-services:
+          - CloudDocuments
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).noor

@@ -60,7 +60,7 @@ private struct HealthSectionsStack: View {
         VStack(alignment: .leading, spacing: NoopMetrics.sectionGap) {
             // Noor: the Noor Age orb leads the Health screen (Body Age, falling back to Fitness Age),
             // followed by the two models behind it.
-            NoorAgeCard(style: .hero)
+            NoorAgeCard()
             VitalitySection()
             FitnessAgeSection()
             // Manual "Sync now" + honest sync status (#364). Its own view so the ~1Hz HR stream
@@ -1255,10 +1255,9 @@ private struct VitalitySection: View {
                         LiquidVessel(value: max(0, min(1, v / 100)), tint: StrandPalette.chargeColor, animated: true)
                             .frame(width: 108, height: 108)
                         VStack(spacing: 0) {
-                            CountUpNumber(value: v, font: StrandFont.rounded(38))
+                            CountUpNumber(value: v, font: StrandFont.rounded(27, weight: .semibold))
                                 .foregroundStyle(.white)
-                                .shadow(color: .black.opacity(0.5), radius: 6, y: 1)
-                            Text("of 100").font(StrandFont.caption).foregroundStyle(StrandPalette.textSecondary)
+                            Text("of 100").font(StrandFont.rounded(9.5, weight: .medium)).foregroundStyle(StrandPalette.textSecondary)
                         }
                         .allowsHitTesting(false)
                     }
