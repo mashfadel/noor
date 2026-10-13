@@ -1302,7 +1302,7 @@ struct TodayView: View {
                 // they can change the day by swiping across or tapping here. fixedSize makes it claim its own
                 // width so a tight top bar never compresses it, and the trailing icon cluster keeps its room.
                 Text(dayNavHint ?? dayNavDateText)
-                    .font(.system(size: 13, weight: .semibold, design: .default))
+                    .font(StrandFont.rounded(13, weight: .semibold))
                     .foregroundStyle(dayNavHint != nil ? StrandPalette.accent : StrandPalette.textPrimary)
                     .lineLimit(1)
                     .fixedSize()
@@ -1345,7 +1345,7 @@ struct TodayView: View {
                         .overlay(alignment: .topTrailing) {
                             if updateStore.unreadCount > 0 {
                                 Text("\(min(updateStore.unreadCount, 99))")
-                                    .font(.system(size: 9, weight: .bold, design: .default))
+                                    .font(StrandFont.rounded(9, weight: .bold))
                                     .monospacedDigit()
                                     .foregroundStyle(StrandPalette.goldDeepText)
                                     .padding(.horizontal, 3.5).padding(.vertical, 1)
@@ -1423,7 +1423,7 @@ struct TodayView: View {
                 .overlay(alignment: .topTrailing) {
                     if updateStore.unreadCount > 0 {
                         Text("\(min(updateStore.unreadCount, 99))")
-                            .font(.system(size: 9, weight: .bold, design: .default))
+                            .font(StrandFont.rounded(9, weight: .bold))
                             .monospacedDigit()
                             .foregroundStyle(StrandPalette.goldDeepText)
                             // Fixed 14pt square + Circle() = a true CIRCLE on both platforms, kept INSIDE

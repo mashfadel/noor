@@ -530,7 +530,7 @@ struct LiquidScoreGauge: View {
     @State private var shown: Double = 0
 
     private var frac: Double? { score.map { max(0, min(1, $0 / maxValue)) } }
-    private var centerFont: Font { StrandFont.rounded(diameter * 36 / Self.homeHeroDiameter, weight: .heavy) }
+    private var centerFont: Font { StrandFont.rounded(diameter * 34 / Self.homeHeroDiameter, weight: .semibold) }
     private var captionFont: Font { StrandFont.rounded(diameter * 0.085, weight: .medium) }
 
     var body: some View {
@@ -542,6 +542,7 @@ struct LiquidScoreGauge: View {
                 Group {
                     if score != nil {
                         CountUpNumber(value: shown, font: centerFont, decimals: decimals)
+                            .tracking(-diameter * 0.012)
                     } else {
                         Text("–").font(centerFont)
                     }

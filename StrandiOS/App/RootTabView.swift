@@ -21,7 +21,7 @@ struct RootTabView: View {
     /// daily brief is cancelled, because the brief calls a provider from the BACKGROUND with no UI
     /// attached and would otherwise keep posting AI notifications for a feature the wearer switched off.
     @AppStorage("noop.coachEnabled") private var coachEnabled = true
-    @AppStorage("noop.bottomBarAutoHide") private var bottomBarAutoHide = false
+    @AppStorage("noop.bottomBarAutoHide") private var bottomBarAutoHide = true
 
     /// The live gym session, owned at the app root — see `LiftSessionController`.
     @EnvironmentObject private var liftSession: LiftSessionController
@@ -81,7 +81,9 @@ struct RootTabView: View {
         Binding(
             get: { selectedTab },
             set: { tag in
-                if tag == selectedTab {
+                if tag == 5 {
+                    withAnimation(Self.sheetEase) { quickAction = .menu }
+                } else if tag == selectedTab {
                     reselectTab(tag)
                 } else {
                     selectedTab = tag
@@ -114,7 +116,7 @@ struct RootTabView: View {
                 guard selectedTab != 0 else { return }
                 let dx = v.translation.width, dy = v.translation.height
                 guard abs(dx) > 60, abs(dx) > abs(dy) * 1.6 else { return }
-                let next = min(4, max(0, selectedTab + (dx < 0 ? 1 : -1)))
+                let next = min(4, max(0, selectedTab + (dx < 0 ? 1 : -1)))  // never lands on the "+" slot (5)
                 if next != selectedTab {
                     withAnimation(.timingCurve(0.22, 1, 0.36, 1, duration: 0.24)) { selectedTab = next }
                 }
@@ -125,27 +127,37 @@ struct RootTabView: View {
         // The platform tab bar is intentionally left fully native. iOS 26 supplies Liquid Glass and
         // its dynamic interaction with scrolling content automatically; older supported releases use
         // the corresponding system material and safe-area behaviour from the same TabView.
+        // Noor: the native iOS 26 Liquid Glass bar — it shrinks on scroll, carries a separate "+" button on
+        // the trailing side (the search-role slot) for quick actions, and a live accessory above it with
+        // heart rate, strap link and Apple Health status. Tags stay literal (`tabPaths`/`scrollTop` are
+        // indexed by them); tag 5 is the "+" slot, which never stays selected (see `nativeTabSelection`).
         TabView(selection: nativeTabSelection) {
-            tab(todayTabRoot, "Today", "square.grid.2x2", path: $tabPaths[0], scrollSignal: scrollTop[0]).tag(0)
-            tab(TrendsView(), "Trends", "chart.line.uptrend.xyaxis", path: $tabPaths[1], scrollSignal: scrollTop[1]).tag(1)
-            tab(SleepView(), "Sleep", "bed.double", path: $tabPaths[2], scrollSignal: scrollTop[2]).tag(2)
-            // K3: Coach promoted to a top-level tab (was behind the More list). The sparkles icon
-            // matches the More-tab row and the macOS sidebar entry.
-            // Conditional on the master switch. The tags stay LITERAL rather than being renumbered when
-            // Coach is absent: `tabPaths` and `scrollTop` are indexed by tag, and More stays tag 4 in both
-            // shapes, so a wearer's More tab keeps its identity, its navigation path and its scroll
-            // position across a flip instead of inheriting Coach's.
-            if coachEnabled {
-                tab(CoachView(), "Coach", "sparkles", path: $tabPaths[3], scrollSignal: scrollTop[3]).tag(3)
+            Tab("Today", systemImage: "sun.max", value: 0) {
+                tab(todayTabRoot, path: $tabPaths[0], scrollSignal: scrollTop[0])
             }
-            moreTab(path: $tabPaths[4], scrollSignal: scrollTop[4]).tag(4)
+            Tab("Sleep", systemImage: "moon", value: 2) {
+                tab(SleepView(), path: $tabPaths[2], scrollSignal: scrollTop[2])
+            }
+            Tab("Trends", systemImage: "chart.xyaxis.line", value: 1) {
+                tab(TrendsView(), path: $tabPaths[1], scrollSignal: scrollTop[1])
+            }
+            // Coach lives in More (an iPhone bar holds five items: four tabs plus the "+" slot).
+            Tab("More", systemImage: "line.3.horizontal", value: 4) {
+                moreTab(path: $tabPaths[4], scrollSignal: scrollTop[4])
+            }
+            Tab("Quick actions", systemImage: "plus", value: 5, role: Self.plusRole) {
+                Color.clear
+            }
+        }
+        .tabViewBottomAccessory {
+            NoorLiveAccessory { withAnimation(Self.sheetEase) { quickAction = .live } }
         }
         .tint(StrandPalette.accent)
         // Switching Coach off while STANDING on it leaves `selectedTab` pointing at a tag no tab claims
         // any more, which renders as an empty tab rather than as an error. Send that wearer to Today, and
         // only in that case, so a flip made from anywhere else does not move them.
         .onChangeCompat(of: coachEnabled) { enabled in
-            if !enabled && selectedTab == 3 { selectedTab = 0 }
+            if !enabled && selectedTab == 3 { selectedTab = 0 }  // legacy tag; Coach now opens inside More
         }
         // #1841: the same "Hide bar when scrolling" preference Android drives its own bar with. Here the
         // system owns the behaviour — iOS 26's tab bar MINIMISES to a pill on scroll down rather than
@@ -223,7 +235,11 @@ struct RootTabView: View {
                     router.requestedDestination = nil
                     break
                 }
-                withAnimation(.timingCurve(0.22, 1, 0.36, 1, duration: 0.24)) { selectedTab = 3 }
+                withAnimation(.timingCurve(0.22, 1, 0.36, 1, duration: 0.24)) {
+                    selectedTab = 4
+                    var coachPath = NavigationPath(); coachPath.append(MoreDestination.coach)
+                    tabPaths[4] = coachPath
+                }
                 router.requestedDestination = nil
             case .trends:
                 // Trends is a primary tab on iPhone (not a pillar sheet) — switch to it.
@@ -360,6 +376,13 @@ struct RootTabView: View {
     }
 
     /// Calm-easing curve (cubic-bezier(0.22,1,0.36,1)) at the README sheet-present duration.
+    /// The "+" slot's role: iOS 27's prominent trailing button, or the iOS 26 search slot (also drawn apart
+    /// from the tabs, on the trailing side of the Liquid Glass bar).
+    private static var plusRole: TabRole {
+        if #available(iOS 27.0, *) { return .prominent }
+        return .search
+    }
+
     private static let sheetEase = Animation.timingCurve(0.22, 1, 0.36, 1, duration: 0.42)
 
     // MARK: - Quick-action sheet
@@ -431,8 +454,7 @@ struct RootTabView: View {
         }
     }
 
-    private func tab<V: View>(_ view: V, _ title: LocalizedStringKey, _ icon: String,
-                              path: Binding<NavigationPath>, scrollSignal: Int) -> some View {
+    private func tab<V: View>(_ view: V, path: Binding<NavigationPath>, scrollSignal: Int) -> some View {
         // Each primary tab gets its OWN NavigationStack so the in-content NavigationLinks (e.g. the Today
         // dashboard card rows) both navigate AND render opaque. An ORPHANED NavigationLink (no
         // NavigationStack ancestor) renders its whole label in a disabled/translucent state — that was
@@ -450,7 +472,6 @@ struct RootTabView: View {
         // Drive this tab's root scroll-to-top on an at-root re-tap (#198 follow-up); read by ScreenScaffold
         // / LiquidTodayView inside. Only THIS tab's token changes on its reselect, so the others don't scroll.
         .environment(\.scrollToTopSignal, scrollSignal)
-        .tabItem { Label(title, systemImage: icon) }
     }
 
     // The "More" tab is the app's catch-all index. It was a plain SwiftUI `List` with system large-title
@@ -464,6 +485,7 @@ struct RootTabView: View {
                            onRefresh: { await repo.refresh() },
                            topBackground: liquidScaffoldSky()) {
                 moreSection("Insights") {
+                    if coachEnabled { MoreRow("Coach", "sparkle", .coach) }
                     MoreRow("What Moves You", "wand.and.sparkles", .insightsHub)
                     MoreRow("Intelligence", "brain.head.profile", .intelligence)
                     // K3: Coach promoted to a top-level tab — no longer listed under More.
@@ -534,7 +556,7 @@ struct RootTabView: View {
         }
         // Scroll the More index to the top on an at-root re-tap (#198 follow-up); read by its ScreenScaffold.
         .environment(\.scrollToTopSignal, scrollSignal)
-        .tabItem { Label("More", systemImage: "ellipsis") }
+
     }
 
     /// One titled, COLLAPSIBLE group in the More index (S2): the app's overline (UPPERCASE) becomes a

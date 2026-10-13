@@ -19,7 +19,7 @@ struct SyncLiveActivity: Widget {
                     Text(context.attributes.title)
                         .font(.caption).foregroundStyle(StrandPalette.textSecondary)
                     Text(context.state.status)
-                        .font(.system(size: 20, weight: .bold, design: .default))
+                        .font(StrandFont.rounded(20, weight: .bold))
                         .foregroundStyle(StrandPalette.textPrimary)
                     if let detail = context.state.detail {
                         Text(detail).font(.caption2).foregroundStyle(StrandPalette.textSecondary)
@@ -28,7 +28,7 @@ struct SyncLiveActivity: Widget {
                 Spacer()
                 if isActive(context.state.phase) {
                     elapsed(since: context.state.startedAt)
-                        .font(.system(.headline, design: .default).monospacedDigit())
+                        .font(StrandFont.rounded(17, weight: .semibold))
                         .foregroundStyle(StrandPalette.textPrimary)
                 }
             }
@@ -49,7 +49,7 @@ struct SyncLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.trailing) {
                     if isActive(context.state.phase) {
                         elapsed(since: context.state.startedAt)
-                            .font(.system(.subheadline, design: .default).monospacedDigit())
+                            .font(StrandFont.rounded(15, weight: .regular))
                     }
                 }
             } compactLeading: {

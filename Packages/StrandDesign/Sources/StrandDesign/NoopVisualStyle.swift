@@ -43,6 +43,14 @@ public enum NoopVisualStyle {
     public static let sectionGap: CGFloat = 26
 }
 
+/// Noor card tokens (graphite body + light-catching edge).
+enum NoorCard {
+    static let top = Color(light: "#FFFFFF", dark: "#171717")
+    static let bottom = Color(light: "#FAFAFA", dark: "#0F0F0F")
+    static let edgeLight = Color(light: "#00000014", dark: "#FFFFFF1F")
+    static let edgeFade = Color(light: "#0000000A", dark: "#FFFFFF05")
+}
+
 /// Shared card/panel treatment: a solid surface on iOS, gradient and soft elevation elsewhere.
 /// `tint` is intentionally faint so metric identity never turns the whole card into a coloured tile.
 public struct NoopPanelSurface: View {
@@ -69,14 +77,21 @@ public struct NoopPanelSurface: View {
     public var body: some View {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         #if os(iOS)
-        // Scrolling stacks contain many panels. Layered translucent gradients and blurred shadows
-        // multiply their compositing work, so iOS uses one theme-aware fill and a thin tinted rim.
-        // This changes decorative depth only; card geometry and the design-system colors stay the same.
+        // Noor card: a deep graphite body, a hairline that catches light along the top edge and fades
+        // out, and — instead of a coloured rim — the metric's colour as a faint glow in one corner.
+        // Kept to two fills + one stroke so long scrolling stacks stay cheap to composite.
         shape
-            .fill(NoopVisualStyle.surface)
+            .fill(LinearGradient(colors: [NoorCard.top, NoorCard.bottom], startPoint: .top, endPoint: .bottom))
+            .overlay {
+                if let tint {
+                    shape.fill(RadialGradient(colors: [tint.opacity(0.13), .clear],
+                                              center: .topLeading, startRadius: 0, endRadius: 190))
+                }
+            }
             .overlay(shape.strokeBorder(
-                tint?.opacity(0.14) ?? NoopVisualStyle.borderHighlight.opacity(elevated ? 0.9 : 0.65),
-                lineWidth: 0.8
+                LinearGradient(colors: [NoorCard.edgeLight.opacity(elevated ? 1 : 0.85), NoorCard.edgeFade],
+                               startPoint: .top, endPoint: .bottom),
+                lineWidth: 0.75
             ))
             .opacity(surfaceOpacity)
         #else

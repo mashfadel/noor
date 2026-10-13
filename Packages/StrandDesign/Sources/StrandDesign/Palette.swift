@@ -702,7 +702,7 @@ private func swatchRow(_ title: String, _ items: [(String, Color)]) -> some View
                         .fill(color)
                         .frame(width: 64, height: 48)
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(StrandPalette.hairline, lineWidth: 1))
-                    Text(name).font(.system(size: 9)).foregroundStyle(StrandPalette.textSecondary)
+                    Text(name).font(StrandFont.rounded(9, weight: .regular)).foregroundStyle(StrandPalette.textSecondary)
                 }
             }
         }

@@ -60,7 +60,7 @@ struct SleepHRChart: View {
                     var line = Path()
                     line.move(to: CGPoint(x: 0, y: y)); line.addLine(to: CGPoint(x: size.width, y: y))
                     ctx.stroke(line, with: .color(StrandPalette.hairline.opacity(0.5)), lineWidth: 1)
-                    ctx.draw(Text(verbatim: "\(Int(grid))").font(.system(size: 9)).foregroundColor(StrandPalette.textTertiary),
+                    ctx.draw(Text(verbatim: "\(Int(grid))").font(StrandFont.rounded(9, weight: .regular)).foregroundColor(StrandPalette.textTertiary),
                              at: CGPoint(x: 10, y: y - 7))
                     grid += step
                 }

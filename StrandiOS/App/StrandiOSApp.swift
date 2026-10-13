@@ -60,7 +60,9 @@ struct StrandiOSApp: App {
         // default only applies until the user flips the Settings toggle.
         // Strain reads on WHOOP's familiar 0–21 axis by default.
         UserDefaults.standard.register(defaults: [PuffinExperiment.autoDetectWorkoutsKey: true,
-                                                  UnitPrefs.effortScaleKey: EffortScale.whoop.rawValue])
+                                                  UnitPrefs.effortScaleKey: EffortScale.whoop.rawValue,
+                                                  // The beta Live Session row stays off Today (still reachable from "+").
+                                                  LiveSessionPrefs.betaKey: false])
         #if DEBUG
         // DEBUG-only promo-screenshot harness: when launched with `--demo-hour <Int>`, pin Today to that
         // hour's day-cycle scene + a per-hour stat frame. No-op (active stays nil) when the arg is absent.
@@ -225,6 +227,8 @@ struct StrandiOSApp: App {
     var body: some Scene {
         WindowGroup {
             iOSRootView()
+                // Noor: Inter is the default face for any text that does not pick a StrandFont itself.
+                .font(StrandFont.body)
                 .environmentObject(model)
                 .environmentObject(model.ble)   // #334: Today pull-to-sync reads BLEManager (no HR churn)
                 .environmentObject(model.live)

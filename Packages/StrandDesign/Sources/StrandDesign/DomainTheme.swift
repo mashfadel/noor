@@ -132,7 +132,7 @@ public struct ScenicHeroBackground: View {
         ScenicHeroBackground(domain: .charge)
             .frame(height: 220)
             .overlay(
-                Text("87").font(.system(size: 60, weight: .bold, design: .default))
+                Text("87").font(StrandFont.rounded(60, weight: .bold))
                     .foregroundStyle(StrandPalette.textPrimary)
             )
         ScenicHeroBackground(domain: .rest)

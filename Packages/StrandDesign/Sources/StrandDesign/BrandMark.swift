@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - BrandMark — the Noor logo mark (interlocking neon rings)
+// MARK: - BrandMark — the Noor logo mark (light rising: three score arcs)
 //
 // (Upstream NOOP notes below describe the original Titanium & Gold mark this replaced.)
 //
@@ -32,15 +32,17 @@ public struct BrandMark: View {
         self.size = size
     }
 
-    // Noor mark: the "oo" of noor as two interlocking neon rings (green → aqua → blue, and
-    // violet → pink) on a black disc. Mirrors the app icon (Tools/noor/make_icon.swift).
-    private var ringRadius: CGFloat { size * 0.205 }
-    private var ringWidth: CGFloat { size * 0.075 }
-    private var offset: CGFloat { size * 0.13 }
+    // Noor mark: light rising over a horizon — three concentric arcs filling like dials (Sleep
+    // violet→pink, Recovery green, Strain blue→cyan) around a white-hot point of light. Mirrors the
+    // app icon (Tools/noor/make_icon.swift).
+    private struct Arc { let radius: CGFloat; let fill: CGFloat; let colors: [Color]; let glow: Color }
+    private var arcs: [Arc] {[
+        Arc(radius: 0.344, fill: 1.00, colors: [Color(hex: "#A24BFF"), NoopVisualStyle.neonPink], glow: NoopVisualStyle.neonPink),
+        Arc(radius: 0.256, fill: 0.78, colors: [Color(hex: "#00C46A"), NoopVisualStyle.neonGreen], glow: NoopVisualStyle.neonGreen),
+        Arc(radius: 0.168, fill: 0.56, colors: [Color(hex: "#2E6BFF"), Color(hex: "#33E1FF")], glow: Color(hex: "#33E1FF")),
+    ]}
+    private var lineWidth: CGFloat { size * 0.053 }
     private var rimWidth: CGFloat { max(1, size * 0.008) }
-
-    private static let leftStops = Gradient(colors: [NoopVisualStyle.neonGreen, NoopVisualStyle.neonAqua, NoopVisualStyle.neonBlue])
-    private static let rightStops = Gradient(colors: [Color(hex: "#A24BFF"), NoopVisualStyle.neonPink])
 
     public var body: some View {
         ZStack {
@@ -48,26 +50,33 @@ public struct BrandMark: View {
                 .fill(LinearGradient(colors: [Color(hex: "#161616"), Color(hex: "#000000")],
                                      startPoint: .top, endPoint: .bottom))
                 .overlay(Circle().strokeBorder(StrandPalette.hairline, lineWidth: rimWidth))
-            ring(Self.rightStops, glow: NoopVisualStyle.neonPink).offset(x: offset)
-            ring(Self.leftStops, glow: NoopVisualStyle.neonAqua).offset(x: -offset)
-            // Lower crossing: the pink ring passes over the green one so the rings read as linked.
-            ring(Self.rightStops, glow: .clear)
-                .offset(x: offset)
-                .mask(Circle().frame(width: ringWidth * 2.2, height: ringWidth * 2.2)
-                        .offset(y: (ringRadius * ringRadius - offset * offset).squareRoot()))
+            Canvas { ctx, sz in
+                let center = CGPoint(x: sz.width / 2, y: sz.height * 0.62)
+                for arc in arcs {
+                    var path = Path()
+                    path.addArc(center: center, radius: arc.radius * sz.width, startAngle: .degrees(180),
+                                endAngle: .degrees(180 + 180 * arc.fill), clockwise: false)
+                    let style = StrokeStyle(lineWidth: lineWidth, lineCap: .round)
+                    var glow = ctx
+                    glow.addFilter(.blur(radius: lineWidth * 0.8))
+                    glow.stroke(path, with: .color(arc.glow.opacity(0.6)), style: style)
+                    ctx.stroke(path, with: .linearGradient(Gradient(colors: arc.colors),
+                        startPoint: CGPoint(x: center.x - arc.radius * sz.width, y: center.y),
+                        endPoint: CGPoint(x: center.x + arc.radius * sz.width, y: center.y)), style: style)
+                }
+                let core = size * 0.066
+                ctx.fill(Path(ellipseIn: CGRect(x: center.x - core * 2.2, y: center.y - core * 2.2,
+                                               width: core * 4.4, height: core * 4.4)),
+                         with: .radialGradient(Gradient(colors: [.white.opacity(0.55), NoopVisualStyle.neonAqua.opacity(0)]),
+                                               center: center, startRadius: 0, endRadius: core * 2.2))
+                ctx.fill(Path(ellipseIn: CGRect(x: center.x - core / 2, y: center.y - core / 2, width: core, height: core)),
+                         with: .color(.white))
+            }
         }
         .frame(width: size, height: size)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text("Noor"))
         .accessibilityAddTraits(.isImage)
-    }
-
-    private func ring(_ gradient: Gradient, glow: Color) -> some View {
-        Circle()
-            .stroke(LinearGradient(gradient: gradient, startPoint: .bottomLeading, endPoint: .topTrailing),
-                    lineWidth: ringWidth)
-            .frame(width: ringRadius * 2, height: ringRadius * 2)
-            .shadow(color: glow.opacity(0.7), radius: size * 0.04)
     }
 }
 

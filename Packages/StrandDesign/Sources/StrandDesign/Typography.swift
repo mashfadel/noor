@@ -1,95 +1,96 @@
 import SwiftUI
-#if canImport(UIKit)
-import UIKit
-#elseif canImport(AppKit)
-import AppKit
-#endif
+import CoreText
 
-// MARK: - Strand Typography (§9.2)
+// MARK: - Noor Typography
 //
-// Noor: crisp SF Pro for text, SF Pro Condensed for scores and live numbers, wide-tracked caps for
-// section labels. Named text styles keep Dynamic Type scaling. SF Mono remains reserved for logs.
-//
-// All numeric styles use `.monospacedDigit()` so live values don't reflow.
+// One human, clean face everywhere: Inter (SIL OFL, bundled as a variable font in Resources/Fonts).
+// Text styles scale with Dynamic Type. Numbers use Inter's tabular figures so live values never
+// reflow; big scores are semibold with tight tracking. SF Mono stays reserved for logs.
+// If the font ever fails to register, `Font.custom` falls back to the system face, so nothing breaks.
+
+/// Registers the bundled Inter variable font for this process (app, widgets, watch). Idempotent.
+public enum NoorFonts {
+    public static let family = "Inter"
+
+    private static let registered: Bool = {
+        let bundle = Bundle.module
+        guard let url = bundle.url(forResource: "Inter", withExtension: "ttf")
+                ?? bundle.url(forResource: "Inter", withExtension: "ttf", subdirectory: "Fonts") else { return false }
+        var error: Unmanaged<CFError>?
+        return CTFontManagerRegisterFontsForURL(url as CFURL, .process, &error)
+            || error.map { CFErrorGetCode($0.takeRetainedValue()) == CTFontManagerError.alreadyRegistered.rawValue } ?? false
+    }()
+
+    /// Call once early (it is also called lazily by every `StrandFont` accessor).
+    public static func register() { _ = registered }
+}
 
 public enum StrandFont {
 
     // MARK: Family
 
-    /// Noor numerals: SF Pro at the condensed width (tall, tight, WHOOP-style score digits). The name is
-    /// kept so every upstream call site picks up the new face without edits.
+    /// Inter at a fixed size (numbers, scores, chrome that must not reflow with Dynamic Type).
+    static func inter(_ size: CGFloat, weight: Font.Weight) -> Font {
+        NoorFonts.register()
+        return Font.custom(NoorFonts.family, fixedSize: size).weight(weight)
+    }
+
+    /// Inter that scales with Dynamic Type relative to a system text style.
+    static func inter(_ size: CGFloat, weight: Font.Weight, relativeTo style: Font.TextStyle) -> Font {
+        NoorFonts.register()
+        return Font.custom(NoorFonts.family, size: size, relativeTo: style).weight(weight)
+    }
+
+    // Kept under its upstream name so every existing call site picks up Inter without edits.
     private static func roundedSystem(_ size: CGFloat, weight: Font.Weight) -> Font {
-        .system(size: size, weight: weight, design: .default).width(.condensed)
+        inter(size, weight: weight)
     }
 
-    // MARK: Scale (§9.2)
+    // MARK: Scale
 
-    /// Display 64–80 / Bold — the gauge score number. Helvetica Neue 700 with tight
-    /// tracking (≈ -0.04em), tabular digits so a changing value never reflows.
+    /// Display 64–80 — the big score number. Semibold with tight tracking, tabular digits.
     public static func display(_ size: CGFloat = 72) -> Font {
-        roundedSystem(size, weight: .bold).monospacedDigit()
+        roundedSystem(size, weight: .semibold).monospacedDigit()
     }
 
-    /// The tight tracking for big display numbers (≈ -0.04em). Apply alongside
-    /// `display(_:)` at the use site, e.g. `.tracking(StrandFont.displayTracking(72))`.
+    /// The tight tracking for big display numbers (≈ -0.035em). Apply alongside `display(_:)`.
     public static func displayTracking(_ size: CGFloat = 72) -> CGFloat {
-        -size * 0.04
+        -size * 0.035
     }
 
-    /// A Helvetica-Neue numeric style at an arbitrary size/weight — the house
-    /// numeral. Tabular so live values align. Use anywhere a score/number is shown.
-    public static func rounded(_ size: CGFloat, weight: Font.Weight = .bold) -> Font {
+    /// The house numeral at an arbitrary size/weight. Tabular so live values align.
+    public static func rounded(_ size: CGFloat, weight: Font.Weight = .semibold) -> Font {
         roundedSystem(size, weight: weight).monospacedDigit()
     }
 
     /// Title1 28 / Bold. Scales with Dynamic Type.
-    public static let title1 = Font.system(.title, design: .default, weight: .bold)
+    public static let title1 = inter(28, weight: .bold, relativeTo: .title)
 
     /// Title2 22 / Semibold. Scales with Dynamic Type.
-    public static let title2 = Font.system(.title2, design: .default, weight: .semibold)
+    public static let title2 = inter(22, weight: .semibold, relativeTo: .title2)
 
     /// Headline 17 / Semibold. Scales with Dynamic Type.
-    public static let headline = Font.system(.headline, design: .default, weight: .semibold)
+    public static let headline = inter(17, weight: .semibold, relativeTo: .headline)
 
-    /// Body 15 / Regular. Scales with Dynamic Type.
-    public static let body = Font.system(.body, design: .default, weight: .regular)
+    /// Body 16 / Regular. Scales with Dynamic Type.
+    public static let body = inter(16, weight: .regular, relativeTo: .body)
 
-    /// Subhead 13. Scales with Dynamic Type.
-    public static let subhead = Font.system(.subheadline, design: .default, weight: .regular)
+    /// Subhead 14. Scales with Dynamic Type.
+    public static let subhead = inter(14, weight: .regular, relativeTo: .subheadline)
 
     /// Caption 12. Scales with Dynamic Type.
-    public static let caption = Font.system(.caption, design: .default, weight: .regular)
+    public static let caption = inter(12, weight: .regular, relativeTo: .caption)
 
-    /// Footnote 11. Scales with Dynamic Type.
-    public static let footnote = Font.system(.footnote, design: .default, weight: .regular)
+    /// Footnote 13. Scales with Dynamic Type.
+    public static let footnote = inter(13, weight: .regular, relativeTo: .footnote)
 
-    /// Overline 11 / Bold, +1.4 tracking (apply `.tracking(1.4)` at use site;
-    /// `overlineText(_:)` does it for you). Sparing ALL-CAPS labels. Scales with Dynamic Type.
-    ///
-    /// Also the face for compact status copy in constrained chrome (the Today header's sync capsule),
-    /// used there WITHOUT the tracking — that is sentence case, not an overline, and the letter-spacing
-    /// is what makes an overline read as one.
-    public static let overline = Font.system(.caption2, design: .default, weight: .semibold)
+    /// Overline 11 / Semibold, wide tracking (`overlineTracking`). Sparing ALL-CAPS labels.
+    /// Also the face for compact status copy in constrained chrome, used there without the tracking.
+    public static let overline = inter(11, weight: .semibold, relativeTo: .caption2)
 
-    /// `overline` at a custom point size — same Helvetica face, weight and Dynamic-Type scaling
-    /// (relativeTo `.caption2`), just smaller. Passing 11 returns exactly `.overline`. Lets a caller
-    /// shrink an ALL-CAPS label to fit a small container without losing accessibility text-scaling.
+    /// `overline` at a custom point size (still scales with Dynamic Type relative to `.caption2`).
     public static func overlineScaled(_ size: CGFloat) -> Font {
-        #if canImport(UIKit)
-        let base = UIFont.systemFont(ofSize: size, weight: .semibold)
-        let descriptor = base.fontDescriptor.withDesign(.default) ?? base.fontDescriptor
-        let rounded = UIFont(descriptor: descriptor, size: size)
-        return Font(UIFontMetrics(forTextStyle: .caption2).scaledFont(for: rounded))
-        #elseif canImport(AppKit)
-        let base = NSFont.systemFont(ofSize: size, weight: .semibold)
-        guard let descriptor = base.fontDescriptor.withDesign(.default),
-              let rounded = NSFont(descriptor: descriptor, size: size) else {
-            return Font(base)
-        }
-        return Font(rounded)
-        #else
-        return .system(size: size, weight: .semibold)
-        #endif
+        inter(size, weight: .semibold, relativeTo: .caption2)
     }
 
     /// Mono 13 (SF Mono) — raw / log views. Tabular by nature.
@@ -97,26 +98,24 @@ public enum StrandFont {
 
     // MARK: Numeric variants (tabular digits)
 
-    /// A numeric style at an arbitrary size/weight, for live values — Helvetica
-    /// Neue, tabular digits. This is the tile/value numeral.
+    /// A numeric style at an arbitrary size/weight, for live values. This is the tile/value numeral.
     public static func number(_ size: CGFloat, weight: Font.Weight = .semibold) -> Font {
         roundedSystem(size, weight: weight).monospacedDigit()
     }
 
-    /// Helvetica-Neue body number — for inline live values that should align. Scales with Dynamic
-    /// Type alongside its sibling `body`/`caption` labels so a value and its label stay matched.
-    public static let bodyNumber = Font.system(.body, design: .default, weight: .medium).monospacedDigit()
+    /// Body number — inline live values that align; scales with Dynamic Type like `body`.
+    public static let bodyNumber = inter(16, weight: .medium, relativeTo: .body).monospacedDigit()
 
-    /// Helvetica-Neue caption number — for small live values (sparklines, chips). Scales with Dynamic Type.
-    public static let captionNumber = Font.system(.caption, design: .default, weight: .medium).monospacedDigit()
+    /// Caption number — small live values (sparklines, chips). Scales with Dynamic Type.
+    public static let captionNumber = inter(12, weight: .medium, relativeTo: .caption).monospacedDigit()
 
     /// Mono at an arbitrary size.
     public static func mono(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
         .system(size: size, weight: weight, design: .monospaced)
     }
 
-    /// The recommended tracking for overline text (wide ALL-CAPS labels, ≈ 0.13em).
-    public static let overlineTracking: CGFloat = 1.6
+    /// The recommended tracking for overline text (ALL-CAPS labels, ≈ 0.1em).
+    public static let overlineTracking: CGFloat = 1.1
 }
 
 // MARK: - Text helpers

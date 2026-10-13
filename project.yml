@@ -206,7 +206,7 @@ targets:
   Noor:
     type: application
     platform: iOS
-    deploymentTarget: "17.0"
+    deploymentTarget: "26.0"  # Noor: Liquid Glass tab bar APIs; personal app on iOS 26+
     sources:
       - path: Strand
         excludes:

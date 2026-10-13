@@ -398,6 +398,15 @@ struct LiquidTodayView: View {
                     // so it renders nothing by default.
                     AutoWorkoutCard()
                     dataSourcesSection
+                    Button { customizationDestination = .today } label: {
+                        Label("Customize Today", systemImage: "slider.horizontal.3")
+                            .font(StrandFont.rounded(13, weight: .medium))
+                            .foregroundStyle(StrandPalette.textTertiary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Customize Today")
                     Color.clear.frame(height: 90) // floating tab-bar clearance
                 }
                 .padding(.horizontal, NoopMetrics.screenHPadding)
@@ -619,20 +628,9 @@ struct LiquidTodayView: View {
                     }
                     .nativeLiquidGlassPhotoFinish()
                     .accessibilityLabel("Profile and settings")
-                    LiquidAddButton()
+                    // Noor: "+" lives in the tab bar and Customize at the foot of Today, so the header
+                    // keeps only the profile and the strap.
                     LiquidBatteryButton()
-                    // One entry point for section order/visibility and both nested card editors.
-                    Button { customizationDestination = .today } label: {
-                        Image(systemName: "slider.horizontal.3")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(StrandPalette.textPrimary)
-                            .frame(
-                                width: NoopMetrics.compactControlSize,
-                                height: NoopMetrics.compactControlSize
-                            )
-                    }
-                    .nativeLiquidGlassHeaderButton()
-                    .accessibilityLabel("Customize Today")
                 }
                 .background(
                     GeometryReader { proxy in
@@ -649,14 +647,8 @@ struct LiquidTodayView: View {
                 guard measured > 0, abs(measured - headerControlsWidth) > 0.5 else { return }
                 headerControlsWidth = measured
             }
-            // Subtle NOOP wordmark in the sky between header and hero. Perfectly centred (a letter row has
-            // no trailing tracking gap the way `Text(...).tracking()` does), with a tap easter egg.
-            // #today-layout: the hero + Start-session row moved OUT of the scene into the reorderable
-            // section block below. The wordmark's bottom pad (10) + the section VStack's 12 spacing keeps
-            // the default hero-under-wordmark gap at the original 22.
-            LiquidWordmark()
-                .padding(.top, 30)
-                .padding(.bottom, 10)
+            // Noor: no wordmark here; the dials sit right under the header.
+            Color.clear.frame(height: 18)
         }
     }
 
@@ -2179,7 +2171,7 @@ private struct LiquidWordmark: View {
     var body: some View {
         // Noor wordmark: lowercase, heavy, with the brand neon sweep and a soft glow.
         Text(verbatim: "noor")
-            .font(.system(size: 26, weight: .black, design: .default))
+            .font(StrandFont.rounded(26, weight: .black))
             .tracking(1.5)
             .foregroundStyle(LinearGradient(gradient: NoopVisualStyle.brandGradient,
                                             startPoint: .leading, endPoint: .trailing))

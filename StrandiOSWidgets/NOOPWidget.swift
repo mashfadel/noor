@@ -145,7 +145,7 @@ struct NOOPWidgetView: View {
                                  ? AnyShapeStyle(StrandPalette.textTertiary)
                                  : AnyShapeStyle(HierarchicalShapeStyle.secondary))
             Text(text ?? "–")
-                .font(.system(size: 15, weight: .semibold, design: .default))
+                .font(StrandFont.rounded(15, weight: .semibold))
                 .foregroundStyle(scoreStyle(hasValue: text != nil, tint: tint))
                 .minimumScaleFactor(0.7)
         }
@@ -344,7 +344,7 @@ struct NOOPWidgetView: View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(alignment: .firstTextBaseline, spacing: 2) {
                 Text(value ?? "–")
-                    .font(.system(size: 20, weight: .semibold, design: .default))
+                    .font(StrandFont.rounded(20, weight: .semibold))
                     .foregroundStyle(value == nil ? StrandPalette.textTertiary : tint)
                 if let unit, value != nil {
                     Text(unit).font(.caption2).foregroundStyle(StrandPalette.textTertiary)
