@@ -68,7 +68,8 @@ struct LiquidTodayView: View {
     // the toggle is off, so no separate gate is needed at fetch time.
     @State private var spo2CandidateByDay: [String: Double] = [:]
     @State private var stepsEst: Double?           // steps_est, day-keyed to the selected day (fallback)
-    @State private var importedStepsDay: Int?      // Apple Health steps for the selected day (middle tier)
+    @State private var importedStepsDay: Int?      // Apple Health steps for the selected day
+    @State private var healthCountsSteps = false   // Noor: Apple Health has recent steps, so it is THE step count
     @State private var importedActiveKcalDay: Double?  // #616: Apple Health active energy for the day (calorie fallback)
     @State private var weightKg: Double?           // #204: Apple Health weight ?: profile fallback
     @State private var hrValues: [Double] = []     // hrBuckets since midnight → 5-min means
@@ -1955,7 +1956,16 @@ struct LiquidTodayView: View {
         // Imported Apple Health steps for the SELECTED day (max across rows), the middle tier between the
         // measured strap count and the motion estimate. Health Connect is Android-only, so apple-health is
         // the sole import source on iOS. Mirrors Android `stepsForDay` (#377).
-        importedStepsDay = (await appleA).filter { $0.day == selectedDayKey }.compactMap { $0.steps }.max()
+        // Noor: Apple Health (iPhone + Watch, merged by Health itself) is the one step count whenever it has
+        // recent data, so this tile, its detail page and the Health app all read the same number. Steps are a
+        // calendar-day total in Health, so today's tile follows the calendar day even in the small hours
+        // when the rest of Today still shows the night-before's logical day. A day Health has no row for is 0.
+        let appleStepRows = await appleA
+        let recentCutoff = Repository.localDayKey(Date().addingTimeInterval(-14 * 86_400))
+        healthCountsSteps = appleStepRows.contains { $0.day >= recentCutoff && ($0.steps ?? 0) > 0 }
+        let stepsDayKey = selectedDayOffset == 0 ? Repository.localDayKey(Date()) : selectedDayKey
+        importedStepsDay = appleStepRows.filter { $0.day == stepsDayKey }.compactMap { $0.steps }.max()
+            ?? (healthCountsSteps ? 0 : nil)
         // #616: same-day imported active energy — the calorie fallback when the strap banked no on-device
         // HR estimate for the day, so the tile/card/detail agree (imported-first, mirrors steps).
         importedActiveKcalDay = (await appleA).filter { $0.day == selectedDayKey }.compactMap { $0.activeKcal }.max()
@@ -2121,14 +2131,16 @@ struct LiquidTodayView: View {
             : String(localized: "Good evening")
     }
 
-    // Measured strap count ?: imported Apple Health count ?: motion estimate — the same precedence the
-    // detail routing follows below, so the tapped-through source always matches the number shown (#377).
+    // Noor: Apple Health's count whenever Health has recent steps; otherwise measured strap count ?: motion
+    // estimate. The detail routing below follows the same precedence, so the tapped-through page always
+    // matches the number shown (#377).
     private var stepCount: Double? {
-        displayDay?.steps.map(Double.init) ?? importedStepsDay.map(Double.init) ?? stepsEst
+        if healthCountsSteps { return importedStepsDay.map(Double.init) }
+        return displayDay?.steps.map(Double.init) ?? importedStepsDay.map(Double.init) ?? stepsEst
     }
 
     private var stepsDetailMetric: MetricDescriptor? {
-        MetricCatalog.todayStepsMetric(hasMeasuredSteps: displayDay?.steps != nil,
+        MetricCatalog.todayStepsMetric(hasMeasuredSteps: !healthCountsSteps && displayDay?.steps != nil,
                                        hasImportedSteps: importedStepsDay != nil)
     }
 

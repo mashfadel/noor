@@ -48,7 +48,11 @@ struct HealthspanSnapshot: Equatable {
         snap.age = bodyAge.last?.value ?? fitnessAge.last?.value
         snap.chronological = profile.age > 0 ? Double(profile.age) : nil
         snap.pace = pace(from: bodyAge)
-        snap.factors = buildFactors(days: repo.days, chronoAge: Double(profile.age))
+        // Steps come from Apple Health (iPhone + Watch) like everywhere else in Noor, when it has any.
+        let healthSteps = Dictionary((await repo.appleDailyRows(days: 200)).compactMap { r in
+            r.steps.flatMap { $0 > 0 ? (r.day, $0) : nil }
+        }, uniquingKeysWith: { a, b in max(a, b) })
+        snap.factors = buildFactors(days: repo.days, chronoAge: Double(profile.age), healthSteps: healthSteps)
         return snap
     }
 
@@ -80,19 +84,22 @@ struct HealthspanSnapshot: Equatable {
 
     private struct Window {
         let rhr, hrv, sleepHours, consistency, steps: Double?
-        init(_ days: ArraySlice<DailyMetric>) {
+        init(_ days: ArraySlice<DailyMetric>, healthSteps: [String: Int], sinceDay: String) {
             let nights = days.compactMap { $0.totalSleepMin }.map { Double($0) / 60 }.filter { $0 > 0 }
             rhr = HealthspanSnapshot.median(days.compactMap { $0.restingHr }.map(Double.init))
             hrv = HealthspanSnapshot.median(days.compactMap { $0.avgHrv })
             sleepHours = HealthspanSnapshot.mean(nights)
             consistency = VitalityEngine.sleepConsistency(nightlyHours: nights)
-            steps = HealthspanSnapshot.mean(days.compactMap { $0.steps }.map(Double.init))
+            let health = healthSteps.filter { $0.key >= sinceDay }.map { Double($0.value) }
+            steps = HealthspanSnapshot.mean(health.isEmpty ? days.compactMap { $0.steps }.map(Double.init) : health)
         }
     }
 
-    static func buildFactors(days: [DailyMetric], chronoAge: Double) -> [Factor] {
+    static func buildFactors(days: [DailyMetric], chronoAge: Double, healthSteps: [String: Int] = [:]) -> [Factor] {
         let sorted = days.sorted { $0.day < $1.day }
-        let w30 = Window(sorted.suffix(30)), w180 = Window(sorted.suffix(180))
+        func since(_ n: Double) -> String { Repository.localDayKey(Date().addingTimeInterval(-n * 86_400)) }
+        let w30 = Window(sorted.suffix(30), healthSteps: healthSteps, sinceDay: since(30))
+        let w180 = Window(sorted.suffix(180), healthSteps: healthSteps, sinceDay: since(180))
         // Per-factor years on the last 30 days: the same log-hazard × overlap shrink ÷ ln-hazard-per-year
         // the engine sums for Body Age.
         let inputs = VitalityEngine.Inputs(chronoAge: chronoAge, restingHR: w30.rhr, sleepHours: w30.sleepHours,

@@ -2630,7 +2630,14 @@ final class IntelligenceEngine: ObservableObject {
         // resting HR, sleep duration + regularity, HRV-vs-age-norm, and steps.)
         let vNights = fa7.compactMap { $0.totalSleepMin }.map { Double($0) / 60.0 }.filter { $0 > 0 }
         let vHRVs = fa7.compactMap { $0.avgHrv }
-        let vSteps = fa7.compactMap { $0.steps }.map(Double.init)
+        // Noor: Apple Health's merged step count for the same days when it has one, the strap's raw motion
+        // tally only as a fallback, so Body Age reads the same steps the rest of the app shows.
+        let healthSteps: [Double] = await {
+            guard let first = fa7.first?.day, let last = fa7.last?.day,
+                  let rows = try? await store.appleDaily(deviceId: "apple-health", from: first, to: last) else { return [] }
+            return rows.compactMap { $0.steps }.filter { $0 > 0 }.map(Double.init)
+        }()
+        let vSteps = healthSteps.isEmpty ? fa7.compactMap { $0.steps }.map(Double.init) : healthSteps
         let vInputs = VitalityEngine.Inputs(
             chronoAge: Double(profile.age),
             restingHR: faRHRs.isEmpty ? nil : IntelligenceEngine.medianOf(faRHRs),
