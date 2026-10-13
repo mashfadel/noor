@@ -17,12 +17,12 @@ struct SyncLiveActivity: Widget {
                     .font(.title2)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(context.attributes.title)
-                        .font(.caption).foregroundStyle(StrandPalette.textSecondary)
+                        .font(StrandFont.rounded(12, weight: .medium)).foregroundStyle(StrandPalette.textSecondary)
                     Text(context.state.status)
                         .font(StrandFont.rounded(20, weight: .bold))
                         .foregroundStyle(StrandPalette.textPrimary)
                     if let detail = context.state.detail {
-                        Text(detail).font(.caption2).foregroundStyle(StrandPalette.textSecondary)
+                        Text(detail).font(StrandFont.rounded(11, weight: .medium)).foregroundStyle(StrandPalette.textSecondary)
                     }
                 }
                 Spacer()
@@ -43,7 +43,7 @@ struct SyncLiveActivity: Widget {
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     Label { Text(context.state.status) } icon: { syncGlyph(context.state.phase) }
-                        .font(.subheadline)
+                        .font(StrandFont.rounded(14, weight: .regular))
                         .lineLimit(1)
                 }
                 DynamicIslandExpandedRegion(.trailing) {

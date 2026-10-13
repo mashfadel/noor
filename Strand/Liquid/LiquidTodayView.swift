@@ -369,7 +369,10 @@ struct LiquidTodayView: View {
                         case .hero:
                             heroCard
                             if chargeLegacyRRGap { ChargeLegacyRRGapNote() }
-                            if selectedDayOffset == 0 { myDaySection }
+                            if selectedDayOffset == 0 {
+                                NoorAgeCard()
+                                myDaySection
+                            }
                         case .liveSession: if liveSessionsBeta { liveSessionStartRow }
                         case .synthesis: synthesisSection
                         case .keyMetrics: keyMetricsSection
@@ -670,7 +673,7 @@ struct LiquidTodayView: View {
 
     // MARK: - My Day (Noor, WHOOP-style)
 
-    /// "My Day": today's activities with one-tap add/start, and tonight's sleep planner.
+    /// "My Day": today's activities with one-tap add/start (alarms live on the Sleep tab).
     private var myDaySection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("My Day")
@@ -682,25 +685,6 @@ struct LiquidTodayView: View {
                     myDayButton("Add activity", icon: "plus") { router.requestQuickActions() }
                     myDayButton("Start activity", icon: "stopwatch") { router.requestedDestination = .activeWorkout }
                 }
-            }
-            myDayCard(title: "Tonight's sleep", chevron: true, action: { router.openAlarms() }) {
-                HStack(spacing: 14) {
-                    Image(systemName: "moon.stars.fill")
-                        .font(.system(size: 22))
-                        .foregroundStyle(StrandPalette.restColor)
-                        .shadow(color: StrandPalette.restColor.opacity(0.6), radius: 8)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Plan your night")
-                            .font(StrandFont.rounded(16, weight: .semibold))
-                            .foregroundStyle(StrandPalette.textPrimary)
-                        Text("Bedtime guidance and a smart alarm that wakes you in light sleep.")
-                            .font(StrandFont.rounded(13, weight: .regular))
-                            .foregroundStyle(StrandPalette.textSecondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-                myDayButton("Set alarm", icon: "alarm") { router.openAlarms() }
-                    .padding(.top, 4)
             }
         }
     }

@@ -25,7 +25,7 @@ struct LiftLiveActivity: Widget {
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     Label(context.state.exercise, systemImage: "dumbbell.fill")
-                        .font(.caption).lineLimit(1)
+                        .font(StrandFont.rounded(12, weight: .medium)).lineLimit(1)
                         .foregroundStyle(tint)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
@@ -34,7 +34,7 @@ struct LiftLiveActivity: Widget {
                     } icon: {
                         Image(systemName: "heart.fill")
                     }
-                    .font(.caption)
+                    .font(StrandFont.rounded(12, weight: .medium))
                     .foregroundStyle(context.state.bpm == nil
                                      ? StrandPalette.textTertiary
                                      : StrandPalette.metricRose)
@@ -42,7 +42,7 @@ struct LiftLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.bottom) {
                     HStack {
                         Text(context.state.detail ?? context.state.status)
-                            .font(.caption).lineLimit(1)
+                            .font(StrandFont.rounded(12, weight: .medium)).lineLimit(1)
                             .foregroundStyle(StrandPalette.textSecondary)
                         Spacer(minLength: 8)
                         clock(context.state, tint: tint)
@@ -104,14 +104,14 @@ struct LiftLiveActivity: Widget {
                     .foregroundStyle(StrandPalette.textPrimary)
                     .lineLimit(1)
                 Text(state.detail.map { "\(state.status) — \($0)" } ?? state.status)
-                    .font(.caption)
+                    .font(StrandFont.rounded(12, weight: .medium))
                     .foregroundStyle(StrandPalette.textSecondary)
                     .lineLimit(1)
                 // The set coming up, alone on the line, arriving pre-localized from the app (the
                 // extension has no catalog). It puts the set number before the exercise, so the tail
                 // truncation a long name needs cuts the name and keeps the number.
                 Text(state.next)
-                    .font(.caption2)
+                    .font(StrandFont.rounded(11, weight: .medium))
                     .foregroundStyle(StrandPalette.textTertiary)
                     .lineLimit(1)
                     .truncationMode(.tail)

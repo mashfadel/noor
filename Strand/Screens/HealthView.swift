@@ -24,8 +24,8 @@ struct HealthView: View {
     // MARK: - Body
 
     var body: some View {
-        ScreenScaffold(title: "Health Monitor",
-                       subtitle: "Live vitals, streamed from the strap.",
+        ScreenScaffold(title: "Health",
+                       subtitle: "Your healthspan, vitality and vitals.",
                        // PERF (scroll): lazy column — byte-identical layout (LazyVStack == eager VStack
                        // alignment/spacing/header); builds the trailing vitals/skin-temp/age sections on
                        // demand instead of all up-front.
@@ -58,20 +58,16 @@ struct HealthView: View {
 private struct HealthSectionsStack: View {
     var body: some View {
         VStack(alignment: .leading, spacing: NoopMetrics.sectionGap) {
+            // Noor: the Noor Age orb leads the Health screen (Body Age, falling back to Fitness Age),
+            // followed by the two models behind it.
+            NoorAgeCard(style: .hero)
+            VitalitySection()
+            FitnessAgeSection()
             // Manual "Sync now" + honest sync status (#364). Its own view so the ~1Hz HR stream
             // doesn't re-render it; depends on `live` (connection/backfill state) + `model`.
             SyncStatusSection()
-            // The live HR section is its own view: it owns `live`/`profile`,
-            // so the ~1Hz HR stream re-renders only this subtree — the static
-            // vitals grid below does not re-render on each HR tick.
+            // The live HR section is its own view, so the ~1Hz HR stream re-renders only this subtree.
             HeartRateSection()
-            // Fitness Age (weekly, computed by IntelligenceEngine and read back from the
-            // "fitness_age" metricSeries). Its own view depending only on `repo`/`profile`,
-            // so the live HR stream never re-renders it.
-            FitnessAgeSection()
-            // Vitality / Body Age (weekly, computed by IntelligenceEngine from the mortality-
-            // hazard model). Its own view depending only on repo/profile.
-            VitalitySection()
             // Screen-5 recovery detail: the CONTRIBUTORS to today's recovery as
             // labelled progress bars (HRV / Resting HR / Sleep / Respiratory), each
             // scored against the on-device baseline. Depends only on `repo`.

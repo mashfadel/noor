@@ -62,7 +62,7 @@ struct NOOPWidgetView: View {
     // MARK: - Colours (match Today's GlowRing domain constants)
 
     private var chargeColor: Color {
-        snap.recovery != nil ? StrandPalette.chargeColor : StrandPalette.textTertiary
+        snap.recovery.map { StrandPalette.recoveryColor(Double($0)) } ?? StrandPalette.textTertiary
     }
 
     /// Fixed domain accent — same as `TodayView.effortRing` (`StrandPalette.effortColor`), not the
@@ -108,7 +108,7 @@ struct NOOPWidgetView: View {
         VStack(spacing: 2) {
             if let bpm = snap.bpm {
                 Text("\(bpm) bpm")
-                    .font(.caption2)
+                    .font(StrandFont.rounded(11, weight: .medium))
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
@@ -180,7 +180,7 @@ struct NOOPWidgetView: View {
         VStack(spacing: 6) {
             headerRow
             // 40pt × 3 = 120 ≤ 128 (SE) / 138 (15 Pro) content widths after 10pt padding.
-            scoreRings(diameter: 40, lineWidth: 4, labelFont: .system(size: 9, weight: .medium))
+            scoreRings(diameter: 40, lineWidth: 4, labelFont: StrandFont.rounded(8.5, weight: .semibold))
             Spacer(minLength: 0)
             vitalsFooter(compact: true)
         }
@@ -193,7 +193,7 @@ struct NOOPWidgetView: View {
     private var medium: some View {
         VStack(spacing: 8) {
             headerRow
-            scoreRings(diameter: 72, lineWidth: 7, labelFont: .caption2)
+            scoreRings(diameter: 72, lineWidth: 7, labelFont: StrandFont.rounded(9.5, weight: .semibold))
             Spacer(minLength: 0)
             vitalsFooter(compact: false)
         }
@@ -206,7 +206,7 @@ struct NOOPWidgetView: View {
     private var large: some View {
         VStack(alignment: .leading, spacing: 12) {
             headerRow
-            scoreRings(diameter: 88, lineWidth: 8, labelFont: .caption)
+            scoreRings(diameter: 88, lineWidth: 8, labelFont: StrandFont.rounded(10.5, weight: .semibold))
             Divider()
             HStack(alignment: .top, spacing: 0) {
                 statCell("HRV", value: snap.hrv.map { "\($0)" }, unit: "ms",
@@ -230,14 +230,16 @@ struct NOOPWidgetView: View {
     // MARK: - Shared pieces
 
     private var headerRow: some View {
-        HStack {
-            Text("Noor")
-                .font(.system(size: 13, weight: .bold))
+        HStack(spacing: 6) {
+            NoorOrb(size: 18, breathing: false)
+            Text(verbatim: "NOOR")
+                .font(StrandFont.rounded(11, weight: .semibold)).tracking(1.6)
                 .foregroundStyle(StrandPalette.textSecondary)
             Spacer()
             Circle()
-                .fill(snap.bonded ? StrandPalette.statusPositive : StrandPalette.statusCritical)
-                .frame(width: 8, height: 8)
+                .fill(snap.bonded ? NoopVisualStyle.neonGreen : StrandPalette.statusCritical)
+                .frame(width: 7, height: 7)
+                .shadow(color: snap.bonded ? NoopVisualStyle.neonGreen : .clear, radius: 3)
                 .accessibilityLabel(snap.bonded ? Text("Connected") : Text("Disconnected"))
         }
     }
@@ -247,9 +249,21 @@ struct NOOPWidgetView: View {
     private func scoreRings(diameter: CGFloat, lineWidth: CGFloat, labelFont: Font) -> some View {
         HStack(alignment: .top, spacing: 0) {
             WidgetScoreRing(
+                text: snap.rest.map(String.init),
+                fraction: snap.rest.map { Double($0) / 100 },
+                label: "Sleep",
+                unit: "%",
+                color: restColor,
+                diameter: diameter,
+                lineWidth: lineWidth,
+                labelFont: labelFont,
+                accessibilityOutOf: 100
+            )
+            WidgetScoreRing(
                 text: snap.recovery.map(String.init),
                 fraction: snap.recovery.map { Double($0) / 100 },
                 label: "Recovery",
+                unit: "%",
                 color: chargeColor,
                 diameter: diameter,
                 lineWidth: lineWidth,
@@ -266,16 +280,6 @@ struct NOOPWidgetView: View {
                 lineWidth: lineWidth,
                 labelFont: labelFont,
                 accessibilityOutOf: (snap.effortWhoop == true) ? 21 : 100
-            )
-            WidgetScoreRing(
-                text: snap.rest.map(String.init),
-                fraction: snap.rest.map { Double($0) / 100 },
-                label: "Sleep",
-                color: restColor,
-                diameter: diameter,
-                lineWidth: lineWidth,
-                labelFont: labelFont,
-                accessibilityOutOf: 100
             )
         }
         .frame(maxWidth: .infinity)
@@ -306,7 +310,7 @@ struct NOOPWidgetView: View {
             vital(symbol: "battery.50", text: snap.batteryPct.map { "\($0)%" },
                   name: "Strap battery", spoken: snap.batteryPct.map { "\($0) percent" })
         }
-        .font(.caption2)
+        .font(StrandFont.rounded(11, weight: .medium))
         .foregroundStyle(StrandPalette.textSecondary)
         .labelStyle(.titleAndIcon)
     }
@@ -347,10 +351,10 @@ struct NOOPWidgetView: View {
                     .font(StrandFont.rounded(20, weight: .semibold))
                     .foregroundStyle(value == nil ? StrandPalette.textTertiary : tint)
                 if let unit, value != nil {
-                    Text(unit).font(.caption2).foregroundStyle(StrandPalette.textTertiary)
+                    Text(unit).font(StrandFont.rounded(11, weight: .medium)).foregroundStyle(StrandPalette.textTertiary)
                 }
             }
-            Text(label).font(.caption2).foregroundStyle(StrandPalette.textTertiary)
+            Text(label).font(StrandFont.rounded(11, weight: .medium)).foregroundStyle(StrandPalette.textTertiary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .ignore)
@@ -370,6 +374,7 @@ private struct WidgetScoreRing: View {
     /// Arc fill 0…1; nil draws the empty track only (unscored).
     let fraction: Double?
     let label: String
+    var unit: String? = nil
     let color: Color
     let diameter: CGFloat
     let lineWidth: CGFloat
@@ -393,19 +398,25 @@ private struct WidgetScoreRing: View {
                         .trim(from: 0, to: max(0.0001, clampedFraction))
                         .stroke(color, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                         .rotationEffect(.degrees(-90))
+                        .shadow(color: color.opacity(0.75), radius: lineWidth * 0.8)
                 }
-                Text(text ?? "–")
-                    .font(StrandFont.rounded(diameter * 0.34, weight: .bold))
-                    .foregroundStyle(text == nil ? StrandPalette.textTertiary : StrandPalette.textPrimary)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.5)
-                    .padding(.horizontal, lineWidth + 2)
+                HStack(alignment: .firstTextBaseline, spacing: 0) {
+                    Text(text ?? "–")
+                        .font(StrandFont.rounded(diameter * 0.32, weight: .semibold))
+                        .monospacedDigit()
+                    if let unit, text != nil {
+                        Text(unit).font(StrandFont.rounded(diameter * 0.15, weight: .semibold)).opacity(0.6)
+                    }
+                }
+                .foregroundStyle(text == nil ? StrandPalette.textTertiary : StrandPalette.textPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .padding(.horizontal, lineWidth + 2)
             }
             .frame(width: diameter, height: diameter)
-            Text(label)
-                .font(labelFont)
-                .foregroundStyle(StrandPalette.textTertiary)
+            Text(label.uppercased())
+                .font(labelFont).tracking(1)
+                .foregroundStyle(StrandPalette.textSecondary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
         }
@@ -423,7 +434,7 @@ struct NOOPWidget: Widget {
         StaticConfiguration(kind: kind, provider: NOOPProvider()) { entry in
             if #available(iOS 17.0, *) {
                 NOOPWidgetView(entry: entry)
-                    .containerBackground(StrandPalette.surfaceBase, for: .widget)
+                    .containerBackground(for: .widget) { NoorWidgetBackground() }
             } else {
                 NOOPWidgetView(entry: entry)
                     .padding()
@@ -436,5 +447,16 @@ struct NOOPWidget: Widget {
             .systemSmall, .systemMedium, .systemLarge,
             .accessoryCircular, .accessoryInline, .accessoryRectangular
         ])
+    }
+}
+
+/// Noor widget canvas: black with a faint aqua glow from the top, like the app's sky.
+struct NoorWidgetBackground: View {
+    var body: some View {
+        ZStack {
+            Color.black
+            RadialGradient(colors: [NoopVisualStyle.neonAqua.opacity(0.14), .clear],
+                           center: .top, startRadius: 0, endRadius: 220)
+        }
     }
 }

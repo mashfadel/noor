@@ -81,7 +81,7 @@ struct CoachBriefWidgetView: View {
                 Spacer(minLength: 0)
                 if let date = entry.briefDate {
                     Text(date, style: .time)
-                        .font(.caption2)
+                        .font(StrandFont.rounded(11, weight: .medium))
                         .foregroundStyle(StrandPalette.textTertiary)
                 }
             }
@@ -132,7 +132,7 @@ struct CoachBriefWidgetView: View {
             Spacer(minLength: 0)
             if let date = entry.briefDate {
                 Text(date, format: .dateTime.hour().minute())
-                    .font(.caption2)
+                    .font(StrandFont.rounded(11, weight: .medium))
                     .foregroundStyle(StrandPalette.textTertiary)
             }
         }
@@ -165,7 +165,7 @@ struct CoachBriefWidget: Widget {
         StaticConfiguration(kind: Self.kind, provider: CoachBriefProvider()) { entry in
             if #available(iOS 17.0, *) {
                 CoachBriefWidgetView(entry: entry)
-                    .containerBackground(StrandPalette.surfaceBase, for: .widget)
+                    .containerBackground(for: .widget) { NoorWidgetBackground() }
             } else {
                 CoachBriefWidgetView(entry: entry)
                     .padding()

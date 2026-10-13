@@ -313,7 +313,7 @@ struct StressWidget: Widget {
         StaticConfiguration(kind: Self.kind, provider: StressProvider()) { entry in
             if #available(iOS 17.0, *) {
                 StressWidgetView(entry: entry)
-                    .containerBackground(StrandPalette.surfaceBase, for: .widget)
+                    .containerBackground(for: .widget) { NoorWidgetBackground() }
             } else {
                 StressWidgetView(entry: entry)
                     .padding()

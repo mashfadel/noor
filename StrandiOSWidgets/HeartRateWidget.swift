@@ -116,7 +116,7 @@ struct HeartRateWidgetView: View {
     /// a local mirror (#C84E1E / #E0662F) — so the two widgets are the same colour rather than two
     /// approximations of one. Named rather than hardcoded here because, unlike Glance, this target can
     /// read the design package; and being a token it follows the Classic theme where a hex could not.
-    private var accent: Color { StrandPalette.zone5 }
+    private var accent: Color { NoopVisualStyle.neonPink }  // Noor: live HR is neon pink everywhere
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -251,7 +251,7 @@ struct HeartRateWidget: Widget {
         StaticConfiguration(kind: Self.kind, provider: HeartRateProvider()) { entry in
             if #available(iOS 17.0, *) {
                 HeartRateWidgetView(entry: entry)
-                    .containerBackground(StrandPalette.surfaceBase, for: .widget)
+                    .containerBackground(for: .widget) { NoorWidgetBackground() }
             } else {
                 HeartRateWidgetView(entry: entry)
                     .padding()
