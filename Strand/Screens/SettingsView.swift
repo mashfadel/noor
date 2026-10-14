@@ -267,6 +267,7 @@ struct SettingsView: View {
                 strapCard.staggeredAppear(index: 3)
                 #if os(iOS)
                 liveNotificationsCard.staggeredAppear(index: 3)
+                strapAlertsCard.staggeredAppear(index: 3)
                 #endif
                 streakCard.staggeredAppear(index: 4)
                 featuresCard.staggeredAppear(index: 5)
@@ -1578,6 +1579,21 @@ struct SettingsView: View {
                 rowDivider
                 liveNotificationSwitch("Strap sync", isOn: $syncLiveActivityEnabled,
                                        detail: "Progress while Noor pulls history from the strap.")
+            }
+        }
+    }
+
+    /// Noor: the strap buzzes while the iPhone rings (StrandiOS `CallBuzz`).
+    @AppStorage("noor.callBuzz.enabled") private var callBuzzEnabled = true
+    private var strapAlertsCard: some View {
+        SettingsSection(
+            icon: "phone.badge.waveform",
+            title: "Strap alerts",
+            blurb: "Feel it on your wrist when your phone is in another room or on silent."
+        ) {
+            VStack(alignment: .leading, spacing: NoopMetrics.rowSpacing) {
+                liveNotificationSwitch("Buzz on incoming calls", isOn: $callBuzzEnabled,
+                                       detail: "The strap buzzes every few seconds while your iPhone rings. Works while Noor is running in the background and the strap is connected.")
             }
         }
     }

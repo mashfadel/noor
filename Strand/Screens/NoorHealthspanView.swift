@@ -160,7 +160,7 @@ struct NoorAgeOrb: View {
         NoorBlobOrb(diameter: diameter, tint: NoorAgeStyle.tint(snapshot.delta), accent: NoorAgeStyle.accent(snapshot.delta)) {
             VStack(spacing: diameter * 0.015) {
                 Text(snapshot.age.map { String(format: "%.1f", $0) } ?? "–")
-                    .font(StrandFont.rounded(diameter * 0.2, weight: .semibold))
+                    .font(StrandFont.rounded(diameter * 0.17, weight: .semibold))
                     .tracking(-diameter * 0.004)
                     .foregroundStyle(.white)
                 Text(verbatim: "NOOR AGE")
@@ -258,7 +258,7 @@ struct NoorHealthspanView: View {
                 NoorBlobOrb(diameter: 290, tint: NoorAgeStyle.tint(snap.delta), accent: NoorAgeStyle.accent(snap.delta)) {
                     VStack(spacing: 6) {
                         Text(snap.age.map { String(format: "%.1f", $0) } ?? "–")
-                            .font(StrandFont.rounded(60, weight: .semibold))
+                            .font(StrandFont.rounded(50, weight: .semibold))
                             .tracking(-1.5)
                             .foregroundStyle(.white)
                         Text(verbatim: "NOOR AGE")

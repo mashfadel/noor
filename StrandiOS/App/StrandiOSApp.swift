@@ -84,6 +84,7 @@ struct StrandiOSApp: App {
                                                   // Automatic daily backup into iCloud Drive › Noor (BackupSync's
                                                   // own-folder mode, which now prefers the iCloud container).
                                                   "backupSync.auto": true,
+                                                  CallBuzz.enabledKey: true,
                                                   "backupSync.useInternalFolder": true])
         #if DEBUG
         // DEBUG-only promo-screenshot harness: when launched with `--demo-hour <Int>`, pin Today to that
@@ -123,6 +124,7 @@ struct StrandiOSApp: App {
         })
         // Settings → "Keep screen on while syncing". Wired once here, not as another modifier on `body`.
         SyncKeepAwake.shared.attach(to: model.live)
+        CallBuzz.shared.attach(to: model)
         // The strap-sync Live Activity (Lock Screen + Dynamic Island). Same placement, same reason — and
         // it must also run in a process the Sync Strap shortcut launched with no scene.
         SyncLiveActivityController.shared.attach(to: model.live)
