@@ -606,7 +606,9 @@ final class Repository: ObservableObject {
         let todayRow = resolveToday(days: days, logicalKey: logicalKey, localKey: localKey)
         if todayRow?.recovery != nil { return todayRow }
         let carriedKey = todayRow?.day ?? logicalKey
-        return days.last(where: { $0.recovery != nil && $0.day < carriedKey })
+        // Noor: with no scored Recovery anywhere yet (the first nights, while the baseline builds), fall back
+        // to today's own row so the widget still shows Sleep and Strain instead of three dashes.
+        return days.last(where: { $0.recovery != nil && $0.day < carriedKey }) ?? todayRow
     }
 
     /// Live-clock convenience over the pure `widgetAnchor`: resolves the anchor for `now` (defaults to the

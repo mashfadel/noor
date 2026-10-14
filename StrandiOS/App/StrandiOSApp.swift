@@ -125,6 +125,15 @@ struct StrandiOSApp: App {
         // Settings → "Keep screen on while syncing". Wired once here, not as another modifier on `body`.
         SyncKeepAwake.shared.attach(to: model.live)
         CallBuzz.shared.attach(to: model)
+        // Noor: open the iCloud container on every launch. iOS registers an app's public iCloud Drive
+        // folder ("Noor", per NSUbiquitousContainers) when the app resolves its container, so waiting for
+        // the daily backup left the folder unlisted in Files after an update. Off the main thread: the
+        // first resolve can block while iCloud sets the container up.
+        Task.detached(priority: .utility) {
+            let fm = FileManager.default
+            guard let docs = fm.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents") else { return }
+            try? fm.createDirectory(at: docs.appendingPathComponent("Backups"), withIntermediateDirectories: true)
+        }
         // The strap-sync Live Activity (Lock Screen + Dynamic Island). Same placement, same reason — and
         // it must also run in a process the Sync Strap shortcut launched with no scene.
         SyncLiveActivityController.shared.attach(to: model.live)
