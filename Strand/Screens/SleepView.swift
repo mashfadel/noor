@@ -542,20 +542,8 @@ struct SleepView: View {
                 // Same LiquidVessel gauge as Home (`LiquidTodayView` / `HeroScoreCell`).
                 VStack(spacing: 8) {
                     // Noor: the score orb (rim lit by the score, specks of light inside).
-                    NoorScoreOrb(diameter: 220, tint: StrandPalette.restColor, accent: StrandPalette.restDeep,
-                                 intensity: score / 100) {
-                        VStack(spacing: 2) {
-                            HStack(alignment: .firstTextBaseline, spacing: 1) {
-                                CountUpNumber(value: score, font: StrandFont.rounded(64, weight: .semibold), decimals: 0)
-                                    .tracking(-2)
-                                Text("%").font(StrandFont.rounded(24, weight: .semibold)).opacity(0.6)
-                            }
-                            .foregroundStyle(Color.white)
-                            Text("SLEEP PERFORMANCE")
-                                .font(StrandFont.rounded(10, weight: .semibold)).tracking(1.4)
-                                .foregroundStyle(Color.white.opacity(0.6))
-                        }
-                    }
+                    // Noor: the same ring as Today's hero.
+                    LiquidScoreGauge(score: score, tint: StrandPalette.restColor, diameter: 200, animated: true, unit: "%")
                     .padding(.vertical, 18)
                     Text(sleepScoreWord(score))
                         .font(StrandFont.subhead.weight(.semibold))

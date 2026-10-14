@@ -169,7 +169,10 @@ final class ProfileStore: ObservableObject {
 
     /// Whole years elapsed `from`→`to` (floor — a birthday not yet reached this year doesn't count).
     nonisolated static func years(from: Date, to: Date) -> Int {
-        Calendar.current.dateComponents([.year], from: from, to: to).year ?? 0
+        // Day-granular: the date picker stores a time of day with the birth date, so comparing raw
+        // instants made a birthday only count from that clock time (e.g. 11pm on the day itself).
+        let cal = Calendar.current
+        return cal.dateComponents([.year], from: cal.startOfDay(for: from), to: cal.startOfDay(for: to)).year ?? 0
     }
 
     /// A date of birth `age` whole years before today, anchored to today's month/day so the derived

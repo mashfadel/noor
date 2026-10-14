@@ -3290,10 +3290,50 @@ final class Repository: ObservableObject {
     /// suggestion card. Bounded per pass; each save joins the saved spans, so the next scan moves on.
     /// Saved as "Workout" — the sport can be changed afterwards from the workout itself.
     func autoSaveDetectedWorkouts() async {
-        for _ in 0..<6 {
+        await removeFalseAutoWorkouts()
+        let rest = days.last(where: { $0.restingHr != nil })?.restingHr
+        for _ in 0..<12 {
             guard let w = await autoDetectCandidate() else { return }
-            guard await saveDetectedWorkout(w) else { return }
+            // The suggestion detector fires on anything 30 bpm over resting for 12 minutes — fine for a
+            // card you can dismiss, far too eager to save on its own (pottering around the house counts).
+            // Only a bout that's genuinely training-level is saved; the rest is dismissed so it is not
+            // re-proposed on the next pass.
+            if Self.isTrainingLevel(w, restingBpm: rest) {
+                guard await saveDetectedWorkout(w) else { return }
+            } else {
+                dismissDetectedSuggestion(w)
+            }
         }
+    }
+
+    /// Training-level bout for auto-saving: at least 15 minutes averaging ≥ 50% of heart-rate reserve
+    /// (resting HR + half the way to an age-predicted max) — the intensity WHOOP-style auto-detect keys on.
+    nonisolated static func isTrainingLevel(_ w: DetectedWorkout, restingBpm: Int?) -> Bool {
+        guard w.durationMin >= 15 else { return false }
+        return Double(w.avgBpm) >= trainingFloorBpm(restingBpm: restingBpm)
+    }
+
+    nonisolated static func trainingFloorBpm(restingBpm: Int?) -> Double {
+        let age = UserDefaults.standard.object(forKey: "profile.age") as? Int ?? 30
+        let rest = Double(restingBpm ?? AutoWorkoutDetector.defaultRestingHR)
+        let maxHR = 208 - 0.7 * Double(age)   // Tanaka
+        return rest + 0.5 * (maxHR - rest)
+    }
+
+    /// One-off: remove the generic "Workout" sessions an earlier Noor build auto-saved below training
+    /// intensity (Health's copies go with them on the next write-back, which deletes orphaned workouts).
+    /// Only rows Noor itself creates are touched: sport "Workout", saved as manual, since Noor's install.
+    private func removeFalseAutoWorkouts() async {
+        let key = "noor.falseAutoWorkoutsRemoved.v1"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        let rest = days.last(where: { $0.restingHr != nil })?.restingHr
+        let floor = Self.trainingFloorBpm(restingBpm: rest)
+        let since = Int(Date().timeIntervalSince1970) - 14 * 86_400
+        for row in await workoutRows(days: 14) where row.sport == "Workout" && row.source == "manual"
+            && row.startTs >= since && Double(row.avgHr ?? 0) < floor {
+            await deleteWorkout(row)
+        }
+        UserDefaults.standard.set(true, forKey: key)
     }
 
     @discardableResult

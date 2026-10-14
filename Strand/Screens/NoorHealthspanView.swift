@@ -136,11 +136,11 @@ struct HealthspanSnapshot: Equatable {
 enum NoorAgeStyle {
     static func tint(_ delta: Double?) -> Color {
         guard let delta else { return NoopVisualStyle.neonAqua }
-        return delta <= 0 ? NoopVisualStyle.neonGreen : NoopVisualStyle.neonPink
+        return delta <= 0 ? NoopVisualStyle.neonGreen : worse
     }
     static func accent(_ delta: Double?) -> Color {
         guard let delta else { return NoopVisualStyle.neonBlue }
-        return delta <= 0 ? NoopVisualStyle.neonAqua : Color(hex: "#A24BFF")
+        return delta <= 0 ? NoopVisualStyle.neonAqua : Color(hex: "#FF5A1F")
     }
     static let worse = Color(hex: "#FF9F2E")
     static let better = NoopVisualStyle.neonGreen

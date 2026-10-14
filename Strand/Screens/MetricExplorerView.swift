@@ -1331,23 +1331,18 @@ struct MetricDetailView: View {
                     if let v = value, let orb = Self.scoreOrbStyle(metric.key, value: v) {
                         // Noor: the three daily scores get the score orb, matching Sleep.
                         VStack(spacing: 10) {
-                            NoorScoreOrb(diameter: 210, tint: orb.tint, accent: orb.accent, intensity: orb.fraction) {
-                                VStack(spacing: 2) {
-                                    HStack(alignment: .firstTextBaseline, spacing: 1) {
-                                        Text(heroValue)
-                                            .font(StrandFont.rounded(54, weight: .semibold))
-                                            .tracking(-1.5)
-                                        if let unit = orb.unit {
-                                            Text(unit).font(StrandFont.rounded(20, weight: .semibold)).opacity(0.6)
-                                        }
-                                    }
-                                    .foregroundStyle(.white)
-                                    Text(metric.title.uppercased())
-                                        .font(StrandFont.rounded(10, weight: .semibold)).tracking(1.4)
-                                        .foregroundStyle(Color.white.opacity(0.6))
-                                }
-                            }
+                            // Noor: the same ring as Today's hero, the number alone inside (no "/21").
+                            let isStrain = metric.key == HeroRingMetric.effort
+                            LiquidScoreGauge(
+                                score: isStrain ? UnitFormatter.effortValue(v, scale: effortScale) : v,
+                                tint: orb.tint, diameter: 200, animated: true,
+                                maxValue: isStrain && effortScale == .whoop ? 21 : 100,
+                                decimals: isStrain && effortScale == .whoop ? 1 : 0,
+                                unit: orb.unit)
                             .padding(.vertical, 16)
+                            Text(metric.title.uppercased())
+                                .font(StrandFont.overline).tracking(1.6)
+                                .foregroundStyle(StrandPalette.textSecondary)
                             Text(asOf)
                                 .font(StrandFont.footnote)
                                 .foregroundStyle(StrandPalette.textTertiary)
