@@ -1250,7 +1250,8 @@ final class HealthKitBridge: ObservableObject {
     /// does not let an app ask whether it may read. With write granted and read withheld the query
     /// returns nothing rather than failing, so reconciliation quietly does nothing and the duplicates
     /// stay. That fails safe, but it fails silent.
-    private func deleteOrphanedWorkouts(fromTs: Int, toTs: Int, keeping: Set<String>) async {
+    @discardableResult
+    private func deleteOrphanedWorkouts(fromTs: Int, toTs: Int, keeping: Set<String>) async -> Bool {
         let pred = NSCompoundPredicate(andPredicateWithSubpredicates: [
             HKQuery.predicateForObjects(from: HKSource.default()),
             // `.strictStartDate`, and it is load-bearing. A workout is an INTERVAL, and the default
@@ -1280,9 +1281,33 @@ final class HealthKitBridge: ObservableObject {
             }
             store.execute(q)
         }
-        guard !orphans.isEmpty else { return }
+        guard !orphans.isEmpty else { return false }
         _ = try? await store.delete(orphans)
+        return true
     }
+
+    /// Noor: HealthKit does NOT delete a workout's associated samples when the workout is deleted. Every
+    /// delete-then-rewrite of a workout therefore left its `activeEnergyBurned` (and distance) sample
+    /// behind and added a fresh one, so each sync stacked another copy of the same kcal into Health
+    /// (seen on device: ~9,800 kcal of active energy in a day). Noor writes these types ONLY as workout
+    /// children, so every one of them carrying our source in the window belongs to a workout we are
+    /// about to rewrite, and can be removed by source + range before the rewrite.
+    private func purgeWorkoutChildSamples(fromTs: Int, toTs: Int) async {
+        let pred = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            HKQuery.predicateForObjects(from: HKSource.default()),
+            HKQuery.predicateForSamples(withStart: Date(timeIntervalSince1970: TimeInterval(fromTs)),
+                                        end: Date(timeIntervalSince1970: TimeInterval(toTs)),
+                                        options: [.strictStartDate]),
+        ])
+        for id: HKQuantityTypeIdentifier in [.activeEnergyBurned, .distanceWalkingRunning, .distanceCycling] {
+            guard let t = HKQuantityType.quantityType(forIdentifier: id),
+                  store.authorizationStatus(for: t) == .sharingAuthorized else { continue }
+            _ = try? await store.deleteObjects(of: t, predicate: pred)
+        }
+    }
+
+    private static let workoutEnergyPurgedKey = "noor.workoutEnergyPurged.v1"
+    private static let workoutFingerprintKey = "noor.workoutWriteFingerprint.v1"
 
     private func writeWorkouts(whoopStore: WhoopStore, fromTs: Int, toTs: Int) async throws {
         guard store.authorizationStatus(for: .workoutType()) == .sharingAuthorized else { return }
@@ -1296,8 +1321,13 @@ final class HealthKitBridge: ObservableObject {
                                                          limit: Self.workoutReadLimit)
         let mine = mineRead ?? []
         let computed = computedRead ?? []
+        // Noor: a workout the Apple Watch already recorded is never written a second time from the strap.
+        let appleRead = try? await whoopStore.workouts(deviceId: appleDeviceId, from: fromTs - 86_400, to: toTs,
+                                                       limit: Self.workoutReadLimit)
+        let apple = (appleRead ?? []).filter { $0.source == HealthKitBridge.appleWorkoutSource }
         var byKey: [String: WorkoutRow] = [:]
-        for w in computed + mine where w.source != HealthKitBridge.appleWorkoutSource {
+        for w in computed + mine where w.source != HealthKitBridge.appleWorkoutSource
+            && !apple.contains(where: { $0.startTs < w.endTs && w.startTs < $0.endTs }) {
             byKey["\(w.startTs):\(w.sport)"] = w
         }
         let rows = byKey.values.sorted { $0.startTs < $1.startTs }
@@ -1316,12 +1346,32 @@ final class HealthKitBridge: ObservableObject {
         //
         // Runs BEFORE the empty-rows return: a window whose last workout was deleted in the app is the
         // case where every Health copy is an orphan, and returning early would leave all of them.
-        if mineRead != nil, computedRead != nil,
+        var removedOrphans = false
+        if mineRead != nil, computedRead != nil, appleRead != nil,
            mine.count < Self.workoutReadLimit, computed.count < Self.workoutReadLimit {
-            await deleteOrphanedWorkouts(fromTs: fromTs, toTs: toTs, keeping: Set(rows.map(key)))
+            removedOrphans = await deleteOrphanedWorkouts(fromTs: fromTs, toTs: toTs, keeping: Set(rows.map(key)))
         }
 
-        guard !rows.isEmpty else { return }
+        // Noor: one-time sweep of the energy/distance an earlier build stacked up (60 days), then a full
+        // rewrite. After that, only rewrite when the set of workouts actually changed — a rewrite on every
+        // sync is what multiplied the energy in the first place.
+        let defaults = UserDefaults.standard
+        let firstClean = !defaults.bool(forKey: Self.workoutEnergyPurgedKey)
+        if firstClean {
+            await purgeWorkoutChildSamples(fromTs: toTs - 60 * 86_400, toTs: toTs)
+        }
+        let fingerprint = rows.map { "\(key($0))|\($0.endTs)|\($0.sport)|\(Int(($0.energyKcal ?? 0).rounded()))|\(Int(($0.distanceM ?? 0).rounded()))" }
+            .joined(separator: ";")
+        if !firstClean, !removedOrphans, defaults.string(forKey: Self.workoutFingerprintKey) == fingerprint { return }
+        // Every energy/distance sample of ours in the window belongs to a workout rewritten below (or to
+        // an orphan just deleted), so clear them all before writing; nothing can stack.
+        await purgeWorkoutChildSamples(fromTs: fromTs, toTs: toTs)
+        if firstClean { defaults.set(true, forKey: Self.workoutEnergyPurgedKey) }
+
+        guard !rows.isEmpty else {
+            defaults.set(fingerprint, forKey: Self.workoutFingerprintKey)
+            return
+        }
         let pred = NSCompoundPredicate(andPredicateWithSubpredicates: [
             HKQuery.predicateForObjects(from: HKSource.default()),
             HKQuery.predicateForObjects(withMetadataKey: HKMetadataKeyExternalUUID,
@@ -1388,6 +1438,7 @@ final class HealthKitBridge: ObservableObject {
                 throw error
             }
         }
+        defaults.set(fingerprint, forKey: Self.workoutFingerprintKey)
     }
 
     /// Reverse of `sportName`: NOOP's sport label → the `HKWorkoutActivityType` written to Health.

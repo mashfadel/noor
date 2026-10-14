@@ -214,9 +214,9 @@ struct StrandiOSApp: App {
         // synced on open only reached Health at the next launch. Weak so the scene owns the bridge's
         // lifetime; the bridge no-ops unless Health was authorized.
         model.healthWriteBack = { [weak bridge, weak model] in
-            // Noor: save any workout the strap's heart rate shows (WHOOP-style auto-detect), so it reaches
-            // Health in the same pass without anyone tapping Start or Save on the phone.
-            await model?.repo.autoSaveDetectedWorkouts()
+            // Noor: workouts are never saved on their own any more (heart rate alone can't tell a workout
+            // from a busy evening). This only removes the ones an earlier build auto-saved.
+            await model?.repo.removeAutoSavedWorkouts()
             _ = await bridge?.writeBackAfterNewData()
         }
     }
