@@ -1,6 +1,7 @@
 #if os(iOS)
 import Foundation
 import WidgetKit
+import StrandAnalytics
 
 extension WidgetSnapshot {
     /// The ACTIVE device's charge for the widget (#2075).
@@ -73,7 +74,21 @@ extension WidgetSnapshot {
         let effortScale = UnitPrefs.resolveEffortScale(
             UserDefaults.standard.string(forKey: UnitPrefs.effortScaleKey) ?? ""
         )
-        let strain = day?.strain
+        // Noor: Strain shows TODAY's effort exactly like the Today ring: the in-progress score from today's
+        // heart rate (the stored row only fills in later), max'd with the stored value. Reading only the
+        // anchor row's stored strain blanked the ring once today had a Recovery but no stored strain yet.
+        let todayRow = Repository.resolveToday(days: days, logicalKey: Repository.logicalDayKey(now),
+                                               localKey: Repository.localDayKey(now))
+        let dayFrom = Int(Repository.logicalDayStart(now).timeIntervalSince1970)
+        let todayHr = await model.repo.hrSamples(from: dayFrom, to: Int(now.timeIntervalSince1970), limit: 200_000)
+        let maxHR = model.profile.effortHRmax
+        let restHR = (todayRow?.restingHr ?? day?.restingHr).map(Double.init) ?? StrainScorer.defaultRestingHR
+        let method = PuffinExperiment.effortMethod
+        let sex = model.profile.sex
+        let liveStrain = await Task.detached(priority: .utility) {
+            StrainScorer.strain(todayHr, maxHR: maxHR, restingHR: restHR, method: method, sex: sex)
+        }.value
+        let strain = StrainScorer.effectiveEffort(live: liveStrain, stored: todayRow?.strain)
         let effortDisplay: String? = strain.map { stored in
             if effortScale == .whoop {
                 return String(format: "%.1f", UnitFormatter.effortValue(stored, scale: .whoop))
