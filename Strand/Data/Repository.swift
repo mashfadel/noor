@@ -602,6 +602,24 @@ final class Repository: ObservableObject {
     /// on. The `$0.day < carriedKey` bound (`carriedKey` = today's own key) mirrors
     /// `TodayView.lastScoredRecoveryDay` + its #547 future-day guard, so a stale or stray future-dated
     /// scored row can never re-surface AS today.
+    /// The window a day's Effort is scored over, shared by the Today ring and the widget so they can never
+    /// disagree: the day-cycle onset (when you fell asleep) when that mode is on, else calendar midnight;
+    /// it ends at the next cycle's onset, or now for today / the next midnight for a past day.
+    func dayCycleWindow(logicalDay: Date, dayKey: String, isToday: Bool, mode: DayCycleMode) async -> (from: Int, to: Int) {
+        let cal = Calendar.current
+        let dayStart = cal.startOfDay(for: logicalDay)
+        let nextStart = cal.date(byAdding: .day, value: 1, to: dayStart) ?? dayStart
+        let calendarFrom = Int(dayStart.timeIntervalSince1970)
+        // today → midnight..now; a past day → its full 24h (a missing morning reads as empty space).
+        let calendarTo = isToday ? Int(Date().timeIntervalSince1970) : Int(nextStart.timeIntervalSince1970)
+        let nextDayKey = Self.localDayKey(nextStart)
+        let cycleMarkers = mode == .sleepOnset
+            ? await exploreSeries(key: DayCycleIntelligenceIntegration.onsetKey, source: "my-whoop") : []
+        let from = cycleMarkers.last(where: { $0.day == dayKey }).map { Int($0.value) } ?? calendarFrom
+        let toExclusive = cycleMarkers.last(where: { $0.day == nextDayKey }).map { Int($0.value) } ?? calendarTo
+        return (from, max(from, toExclusive - 1))
+    }
+
     nonisolated static func widgetAnchor(days: [DailyMetric], logicalKey: String, localKey: String) -> DailyMetric? {
         let todayRow = resolveToday(days: days, logicalKey: logicalKey, localKey: localKey)
         if todayRow?.recovery != nil { return todayRow }

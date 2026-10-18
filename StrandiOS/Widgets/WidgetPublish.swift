@@ -79,10 +79,13 @@ extension WidgetSnapshot {
         // anchor row's stored strain blanked the ring once today had a Recovery but no stored strain yet.
         let todayRow = Repository.resolveToday(days: days, logicalKey: Repository.logicalDayKey(now),
                                                localKey: Repository.localDayKey(now))
-        let dayFrom = Int(Repository.logicalDayStart(now).timeIntervalSince1970)
-        let todayHr = await model.repo.hrSamples(from: dayFrom, to: Int(now.timeIntervalSince1970), limit: 200_000)
+        let cycleMode = DayCycleMode.persisted(UserDefaults.standard.string(forKey: DayCycleMode.storageKey))
+        let (dayFrom, dayTo) = await model.repo.dayCycleWindow(
+            logicalDay: Repository.logicalDay(now), dayKey: model.repo.today?.day ?? Repository.localDayKey(Repository.logicalDay(now)),
+            isToday: true, mode: cycleMode)
+        let todayHr = await model.repo.hrSamples(from: dayFrom, to: dayTo, limit: 200_000)
         let maxHR = model.profile.effortHRmax
-        let restHR = (todayRow?.restingHr ?? day?.restingHr).map(Double.init) ?? StrainScorer.defaultRestingHR
+        let restHR = todayRow?.restingHr.map(Double.init) ?? StrainScorer.defaultRestingHR
         let method = PuffinExperiment.effortMethod
         let sex = model.profile.sex
         let liveStrain = await Task.detached(priority: .utility) {

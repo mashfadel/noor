@@ -1810,17 +1810,8 @@ struct LiquidTodayView: View {
 
         let cal = Calendar.current
         let dayStart = cal.startOfDay(for: selectedLogicalDay)
-        let calendarFrom = Int(dayStart.timeIntervalSince1970)
-        // today → midnight..now; a past day → its full 24h (a missing morning reads as empty space).
-        let calendarTo: Int = selectedDayOffset == 0
-            ? Int(Date().timeIntervalSince1970)
-            : Int((cal.date(byAdding: .day, value: 1, to: dayStart) ?? dayStart).timeIntervalSince1970)
-        let nextDayKey = Repository.localDayKey(cal.date(byAdding: .day, value: 1, to: dayStart) ?? dayStart)
-        let cycleMarkers = dayCycleMode == .sleepOnset
-            ? await repo.exploreSeries(key: DayCycleIntelligenceIntegration.onsetKey, source: "my-whoop") : []
-        let from = cycleMarkers.last(where: { $0.day == selectedDayKey }).map { Int($0.value) } ?? calendarFrom
-        let toExclusive = cycleMarkers.last(where: { $0.day == nextDayKey }).map { Int($0.value) } ?? calendarTo
-        let to = max(from, toExclusive - 1)
+        let (from, to) = await repo.dayCycleWindow(logicalDay: selectedLogicalDay, dayKey: selectedDayKey,
+                                                   isToday: selectedDayOffset == 0, mode: dayCycleMode)
         // #1001: in-progress Effort for TODAY, over the SAME window resolved just above (the day-cycle
         // onset when that mode is on, else calendar midnight → now) with the identical params the daily
         // pass uses, so the live number matches what the engine will eventually persist. Below
